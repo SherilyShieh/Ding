@@ -1,0 +1,189 @@
+.search-filter {
+    background: white;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    flex-flow: wrap;
+    font-size: 14px;
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+}
+
+.filter-price {
+    display: flex;
+    align-items: center;
+}
+
+.common-margin-search {
+    margin: 5px 15px 5px 0px !important;
+}
+
+.filter-time {
+    display: flex;
+    align-items: center;
+}
+
+.price {
+    margin-right: 10px;
+}
+
+.search-price {
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.search-price img {
+    width: 18px;
+}
+
+.time-picker {
+    display: flex;
+    align-items: center;
+    border: solid 1px #C1C2C7;
+    border-radius: 2px;
+    padding-left: 10px;
+}
+
+.time-picker img {
+    width: 18px;
+}
+
+.time-picker input {
+    border: none !important;
+    width: auto;
+}
+
+.time-picker input:focus {
+    border: none !important;
+    outline: none !important;
+}
+
+.search-filter input {
+    padding: 8px;
+    max-width: 140px;
+    border-color: #C1C2C7;
+    border-width: 1px;
+    border-radius: 2px;
+    border-style: solid;
+    text-align: center;
+}
+
+.search-filter span {
+    margin: 10px;
+}
+
+.search-pagers {
+    display: flex;
+    align-items: center;
+}
+
+.search-pagers img {
+    width: 18px;
+    cursor: pointer;
+}
+
+.common-margin-search2 {
+    margin-right: 20px;
+}
+
+.search-pagers input {
+    max-width: 50px;
+}
+
+.search-result {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+.product-item {
+    background-color: white;
+    border-radius: 6px;
+    margin-bottom: calc(1.8%);
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+}
+
+.product-icon {
+    width: 100%;
+    height: 180px;
+    cursor: pointer;
+    border-radius: 6px;
+}
+
+.product-info {
+    padding: 15px;
+}
+
+.product-info {
+    padding: 0 15px 15px 15px;
+    display: flex;
+    flex-flow: column;
+}
+
+.product-price {
+    font-size: 20px;
+    font-weight: 600;
+    color: #F1442A;
+}
+
+.procuct-name {
+    font-size: 14px;
+    color: #666666;
+    display: inline-block;
+    margin: 5px 0;
+}
+
+.store-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    color: #666666;
+    margin-bottom: 5px;
+}
+
+.buyer-behavior {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.buyer-behavior img {
+    width: 18px;
+    cursor: pointer;
+}
+
+@media only screen and (max-width: 768px) {
+    .product-item {
+        width: 48%;
+        margin-right: calc(1%);
+    }
+}
+
+@media only screen and (min-width: 768px) {
+    .product-item {
+        width: 32.33%;
+        margin-right: calc(1%);
+    }
+}
+
+@media only screen and (min-width: 992px) {
+    .product-item {
+        width: 24%;
+        margin-right: calc(1%);
+    }
+}
+
+@media only screen and (min-width: 1200px) {
+    .product-item {
+        width: 19%;
+        margin-right: calc(1%);
+    }
+}
+
+@media only screen and (min-width: 1920px) {
+    .product-item {
+        width: 19%;
+        margin-right: calc(1%);
+    }
+}

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <link type="text/css" rel="styleSheet" href="../style/ding.css" />
+</head>
+
+<body>
+    <div class="cart-item">
+        <section class="cart-shop">
+            <img src="../../static/unselected.png" id="cart-shop-selection" class="cart-selection-btn" onclick="() => changeSelected(index)">
+            <span id="cart-shop-name">Alexander's Store</span>
+        </section>
+        <section id="cart-product-list">
+            <section id="cart-product-item" class="cart-product-item">
+                <img src="../../static/unselected.png" id="cart-product-selection" class="cart-selection-btn">
+                <img src="../../static/women_running.png" class="cart-product-icon">
+                <section class="cart-product-info">
+                    <span class="cart-product-name" id="cart-product-name">ASICS Women's Gel-Venture 6 Running-Shoes</span>
+                    <span id="cart-product-size">Size: 1</span>
+                    <span id="cart-product-color">Color: red</span>
+                    <section class="cart-product-price">
+                        <span id="cart-product-single-price">NZ$200.00</span>
+                        <section class="cart-product-action">
+                            <img src="../../static/mins1.png">
+                            <input type="number" value="1" id="cart-product-number">
+                            <img src="../../static/add1.png">
+                        </section>
+                    </section>
+                </section>
+            </section>
+        </section>
+    </div>
+    <script>
+        var isS = true;
+
+        function getResouce() {
+            return isS ? "../../static/unselected.png" : "../../static/selected.png";
+        }
+    </script>
+</body>
+
+</html>

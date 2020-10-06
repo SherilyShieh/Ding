@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <link type="text/css" rel="styleSheet" href="../style/ding.css" />
+    <script type="text/javascript" src="common.js"></script>
+</head>
+
+<body>
+    <div class="feedback-center" onclick="openorcloseFeedback(true)">
+        <img src="../../static/feed_back.png" class="feedback-center-icon">
+    </div>
+    <section class="dialog-mask" id="dialog-mask-feedback">
+        <section class="dialog-position">
+            <section class="dialog" id="feedback-dialog">
+                <img src="../../static/delete1.png" class="close-dialog" onclick="openorcloseFeedback(false)">
+                <p class="dialog-title">Feedback Center</p>
+                <section class="dialog-form">
+                    <section class="dialog-form-item">
+                        <label>Name</label>
+                        <input type="text" name="size" style="width: 300px;" id="feedback-name" placeholder="Please enter your name!" onblur="checkFeedback(this, 'error-feedback-name', false)" oninput="cancelFeedbackError(this, 'error-feedback-name')">
+                    </section>
+                    <span id="error-feedback-name" class="error-msg-user" style="margin-left: 100px;">Please enter your name!</span>
+                    <section class="dialog-form-item">
+                        <label>Email</label>
+                        <input type="text" name="color" style="width: 300px;" id="feedback-email" placeholder="Please enter your emial!" onblur="checkFeedback(this, 'error-feedbackemail', true)" oninput="cancelFeedbackError(this, 'error-feedbackemail')">
+                    </section>
+                    <span id="error-feedback-email" class="error-msg-user" style="margin-left: 100px;">Please enter your email!</span>
+                    <section class="dialog-form-item">
+                        <label>Feedback</label>
+                        <textarea name="description" cols="40" rows="8" id="feedback-content" placeholder="Please enter your feedback!" onblur="checkFeedback(this, 'error-feedback-content', false)" oninput="cancelFeedbackError(this, 'error-feedback-content')"></textarea>
+                    </section>
+                    <span id="error-feedback-content" class="error-msg-user" style="margin-left: 100px;">Please enter the feedback detail!</span>
+                    <section class="dialog-form-item-btn">
+                        <button onclick="sendFeedback()">Send</button>
+                    </section>
+                </section>
+            </section>
+        </section>
+    </section>
+</body>
+
+</html>

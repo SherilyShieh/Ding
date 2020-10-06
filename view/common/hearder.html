@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <link type="text/css" rel="styleSheet" href="../style/ding.css" />
+    <script type="text/javascript" src="common.js"></script>
+    <script type="text/javascript" src="../../data/mockdata.js"></script>
+    <!-- <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script> -->
+</head>
+
+<body>
+    <div id="my-toast"></div>
+    <div class="header col-24">
+        <section class="col-xs-24 col-sm-20 col-md-16 col-lg-12 col-xl-12 head-left">
+            <section class="ding-logo" onclick="backHome()">
+                <img src="../../static/star.png">
+                <span>Ding</span>
+            </section>
+            <section class="head-search">
+                <section class="dropdown">
+                    <section class="dropbtn" onclick="openHeaderFilterDropdown()">
+                        <span id="header-filter">All</span>
+                        <img src="../../static/down.png" id="filter-open-arrow">
+                    </section>
+                    <section class="dropdown-content" id="filter-dropdown">
+                        <p id="header-dd-0" onclick="selectedFilter(0)">All</p>
+                        <p id="header-dd-1" onclick="selectedFilter(1)">Women's Fashion</p>
+                        <p id="header-dd-2" onclick="selectedFilter(2)">Men's Fashion</p>
+                        <p id="header-dd-3" onclick="selectedFilter(3)">Girls' Fashion</p>
+                        <p id="header-dd-4" onclick="selectedFilter(4)">Boys' Fashion</p>
+                    </section>
+                </section>
+                <!-- todo: click trigge the dropdown -->
+                <input type="text" name="key" placeholder="please input the keyword" id="common-search-bar">
+                <img src="../../static/search.png" onclick="search()">
+            </section>
+        </section>
+        <section class="col-sm-4 col-md-8 col-lg-12 col-xl-12 head-right">
+            <section class="dropdown">
+                <section class="my-account" onclick="openDropdown()">
+                    <img src="../../static/me.png">
+                    <span id="account-name-dp">My Account</span>
+                </section>
+                <section class="dropdown-content" id="unlogin-dropdown">
+                    <p onclick="register()">Register</p>
+                    <p onclick="login()">Login</p>
+                </section>
+                <section class="dropdown-content" id="logined-dropdown">
+                    <p onclick="openMyaccount(0)">Profile</p>
+                    <p onclick="openMyaccount(1)">Store</p>
+                    <p onclick="openMyaccount(2)">Orders</p>
+                    <p onclick="openMyaccount(3)">Collections</p>
+                    <p onclick="logout()">Logout</p>
+                </section>
+            </section>
+            <!-- todo: different type dropdown -->
+            <section class="my-account" onclick="openAboutus()">
+                <img src="../../static/aboutus.png">
+                <span>Abbout Us</span>
+            </section>
+            <section class="my-account" onclick="openCart()">
+                <img src="../../static/cart.png">
+                <span>My Cart</span>
+            </section>
+        </section>
+    </div>
+    <section class="cart-red-num-div" onclick="openCart()">
+        <span id="cart-red-num">99+</span>
+    </section>
+    <section class="dialog-mask" id="dialog-mask">
+        <section class="cart-drawers">
+            <img src="../../static/delete.png" class="cart-drawers-close" onclick="closeCart()">
+            <section class="my-cart">
+                <section class="my-cart-header">
+                    <span>My Cart</span>
+                    <span id="cart-count">Total: 10</span>
+                </section>
+                <section id="cart-list">
+                </section>
+                <section id="cart-list-empty">
+                    <section class="cart-empty-sec">
+                        <section class="cart-empty">
+                            <img src="../../static/empty.png">
+                            <spn>Empty Cart~!</spn>
+                        </section>
+                    </section>
+                </section>
+                <section class="my-cart-footer">
+                    <img src="../../static/bin3.png" onclick="deleteSelected()">
+                    <section class="my-cart-buy">
+                        <section>
+                            <span>Total:</span>
+                            <span id="total-money">NZ$300</span>
+                        </section>
+                        <button type="button" id="cart-buy" onclick="purchase()">
+                        BUY
+                    </button>
+                    </section>
+                </section>
+            </section>
+        </section>
+    </section>
+    <section class="dialog-mask" id="dialog-mask-login">
+        <section class="dialog-position">
+            <section class="dialog" id="login-dialog">
+                <img src="../../static/delete1.png" class="close-dialog" onclick="closeLoginDialog()">
+                <p class="dialog-title">Login</p>
+                <section class="dialog-form">
+                    <span id="error-login" class="error-msg-top">Wrong password or wrong user information</span>
+                    <section class="dialog-form-item2">
+                        <label>Email/Phone</label>
+                        <input type="email|phone" name="accountName" id="account-name-login" placeholder="Please enter your Email or Phone." required autofocus onblur="CheckUserName()" oninput="cancleError()">
+                    </section>
+                    <span id="error-user" class="error-msg-user">Please enter the correct email or phone number!</span>
+                    <section class="dialog-form-item2">
+                        <label>Password</label>
+                        <section class="password-status-sec" i id="hide-password">
+                            <input type="password" name="password" id="password-login-hide" placeholder="Please enter your password!" required onblur="checkPasswordRegister(this)" oninput="cancleErrorPwd(this)">
+                            <img src="../../static/eye_close.png" onclick="showpwd()" class="password-status">
+                        </section>
+                        <section class="password-status-sec default" id="show-password">
+                            <input type="text" name="password" id="password-login-show" placeholder="Please enter your password!" required onblur="checkPasswordRegister(this)" oninput="cancleErrorPwd(this)">
+                            <img src="../../static/eye_open.png" onclick="hidepwd()" class="password-status">
+                        </section>
+                    </section>
+                    <span id="error-password-login" class="error-msg-user">Please enter your password!</span>
+                    <section class="dialog-form-item-btn">
+                        <button onclick="loginU()">Login</button>
+                    </section>
+                </section>
+            </section>
+        </section>
+    </section>
+    <section class="dialog-mask" id="dialog-mask-register">
+        <section class="dialog-position">
+            <section class="dialog" id="register-dialog">
+                <img src="../../static/delete1.png" class="close-dialog" onclick="closeRegisterDialog()">
+                <p class="dialog-title">Register</p>
+                <section class="dialog-form">
+                    <section class="dialog-form-item2">
+                        <label>Legal Name</label>
+                        <input type="text" name="legalName" id="legal-name" placeholder="Please enter your name." required autofocus onblur="checkLName(this)" oninput="cancleErrorLName(this)">
+                    </section>
+                    <span id="error-legal-name" class="error-msg-user">Please enter your name</span>
+                    <section class="dialog-form-item2">
+                        <label>Address</label>
+                        <input type="text" name="address" id="register-address" placeholder="Please enter your address." required onblur="checkAddress(this)" oninput="cancleErrorAddress(this)">
+                    </section>
+                    <span id="error-address" class="error-msg-user">Please enter your address</span>
+                    <section class="dialog-form-item2">
+                        <label>Email</label>
+                        <input type="email" name="emial" id="register-emial" placeholder="Please enter your emial." required onblur="checkEmail(this)" oninput="cancleErrorEmail(this)">
+                    </section>
+                    <span id="error-emial" class="error-msg-user">Please enter your Email</span>
+                    <section class="dialog-form-item2">
+                        <label>Phone</label>
+                        <input type="number" name="phone" id="register-phone" placeholder="Please enter your phone number." required onblur="checkPhone(this)" oninput="cancleErrorPhone(this)">
+                    </section>
+                    <span id="error-phone" class="error-msg-user">Please enter your address</span>
+                    <section class="dialog-form-item2">
+                        <label>Nickname</label>
+                        <input type="text" name="nickname" id="register-nickname" placeholder="Please set a nickname of 3-11 characters." required onblur="checkNickname(this)" oninput="cancleErrorNickname(this)" maxlength="11">
+                    </section>
+                    <span id="error-nickname" class="error-msg-user">Please enter 3-10 characters.</span>
+                    <span class="dialoig-notice">Set your password</span>
+                    <section class="dialog-form-item2">
+                        <label>Password</label>
+                        <section class="password-status-sec" id="hide-password-register">
+                            <input type="password" name="password" id="password-register-hide" placeholder="Please enter your password!" oninput="cancleErrorPwdRegistewr(this)" onblur="checkPassword(this)">
+                            <img src="../../static/eye_close.png" onclick="showRegisterpwd()" class="password-status">
+                        </section>
+                        <section class="password-status-sec default" id="show-password-register">
+                            <input type="text" name="password" id="password-register-show" placeholder="Please enter your password!" oninput="cancleErrorPwdRegistewr(this)" onblur="checkPassword(this)">
+                            <img src="../../static/eye_open.png" onclick="hideRegisterpwd()" class="password-status">
+                        </section>
+                    </section>
+                    <span id="error-passowrd" class="error-msg-user">Please set your password!</span>
+                    <ul class="pwdStrength">
+                        <li class="weak"></li>
+                        <li class="middle"></li>
+                        <li class="strong"></li>
+                        <li class="result"></li>
+                    </ul>
+                    <section class="dialog-form-item2">
+                        <label>Comfirm</label>
+                        <section class="password-status-sec" id="hide-confirm">
+                            <input type="password" name="password" id="confirm-hide" placeholder="Please enter your password!" required oninput="cancelErrorConfirm(this)" onblur="checkConfirmInfo(this)">
+                            <img src="../../static/eye_close.png" onclick="showConfirmpwd()" class="password-status">
+                        </section>
+                        <section class="password-status-sec default" id="show-confirm">
+                            <input type="text" name="password" id="confirm-show" placeholder="Please enter your password!" required oninput="cancelErrorConfirm(this)" onblur="checkConfirmInfo(this)">
+                            <img src="../../static/eye_open.png" onclick="hideConfirmpwd()" class="password-status">
+                        </section>
+                    </section>
+                    <span id="error-confirm" class="error-msg-user">Please enter your password!</span>
+                    <section class="dialog-form-item-btn">
+                        <button onclick="RegisterU()">Register</button>
+                    </section>
+                </section>
+            </section>
+        </section>
+    </section>
+    <section>
+
+    </section>
+
+</body>
+
+</html>

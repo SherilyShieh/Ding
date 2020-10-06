@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Result</title>
+    <link type="text/css" rel="styleSheet" href="../style/ding.css" />
+    <link type="text/css" rel="styleSheet" href="../style/search.css" />
+    <script type="text/javascript" src="../common/common.js"></script>
+    <script type="text/javascript" src="search.js"></script>
+</head>
+
+<body>
+    <div id="my-head"></div>
+    <div class="content">
+        <section class="search-filter">
+            <section class="filter-price common-margin-search">
+                <section class="dropdown price">
+                    <section class="search-price" onclick="openPriceSortDp(true)">
+                        <span class="dropbtn" style="border: none;" id="price-sort">Price: Low to High</span>
+                        <img src="../../static/down.png">
+                    </section>
+                    <section class="dropdown-content" id="price-sort-dp">
+                        <p onclick="changePriceSort(this)">Low to High</p>
+                        <p onclick="changePriceSort(this)">High to Low</p>
+                    </section>
+                </section>
+                <input type="text" name="price_low" placeholder="input price">
+                <span>--</span>
+                <input type="text" name="price_high" placeholder="input price">
+            </section>
+            <section class="filter-time common-margin-search">
+                <section class="dropdown price">
+                    <section class="search-price" onclick="openTimeSortDp(true)">
+                        <span class="dropbtn" style="border: none;" id="time-sort">Time: Old to Latest</span>
+                        <img src="../../static/down.png">
+                    </section>
+                    <section class="dropdown-content" id="time-sort-dp">
+                        <p onclick="changeTimeSort(this)">Old to Latest</p>
+                        <p onclick="changeTimeSort(this)">Latest to Old</p>
+                    </section>
+                </section>
+                <section class="time-picker common-margin-search">
+                    <!-- <img src="../../static/clock.png"> -->
+                    <input type="date" name="time_start" placeholder="09/03/2020">
+                    <span>-</span>
+                    <!-- <img src="../../static/clock.png"> -->
+                    <input type="date" name="time_end" placeholder="10/08/2020">
+                </section>
+            </section>
+            <section class="dropdown common-margin-search">
+                <section class="search-price" onclick="openDepartments(true)">
+                    <span class="dropbtn" style="border: none;" id="search-department">Type: All</span>
+                    <img src="../../static/down.png">
+                </section>
+                <section class="dropdown-content" id="search-department-dp">
+                    <p onclick="changeDepartment(this)">All</p>
+                    <p onclick="changeDepartment(this)">Women</p>
+                    <p onclick="changeDepartment(this)">Men</p>
+                    <p onclick="changeDepartment(this)">Girls</p>
+                    <p onclick="changeDepartment(this)">Boys</p>
+                </section>
+            </section>
+            <section class="dropdown common-margin-search">
+                <section class="search-price" onclick="openTypes(true)">
+                    <span class="dropbtn" style="border: none;" id="search-types">Categories: All</span>
+                    <img src="../../static/down.png">
+                </section>
+                <section class="dropdown-content" id="search-types-dp">
+                    <p onclick="changeType(this)">All</p>
+                    <p onclick="changeType(this)">Sneakers</p>
+                    <p onclick="changeType(this)">Runners</p>
+                    <p onclick="changeType(this)">Boots</p>
+                    <p onclick="changeType(this)">Slippers</p>
+                    <p onclick="changeType(this)">Outdoor</p>
+                    <p onclick="changeType(this)">Sandals</p>
+                </section>
+            </section>
+            <section class="search-pagers common-margin-search">
+                <img src="../../static/right.png" onclick="previous()">
+                <span>1/100</span>
+                <img src="../../static/left.png" onclick="next()">
+                <span>To</span>
+                <input type="text" name="index" placeholder="1" onkeydown="goToPage(event, this)">
+            </section>
+        </section>
+        <section class="search-result" id="search-list">
+        </section>
+        <section class="empty-margin" id="search-list-empty">
+            <section class="cart-empty">
+                <img src="../../static/empty.png">
+                <spn>Empty Cart~!</spn>
+            </section>
+        </section>
+
+    </div>
+    <div id="my-footer"></div>
+    <div id="my-toast"></div>
+    <div id="feedback-center"></div>
+    <section class="dialog-mask" id="dialog-mask-buy-add">
+        <section class="dialog-position">
+            <section class="dialog" id="buy-add-dialog">
+                <img src="../../static/delete1.png" class="close-dialog" onclick="closeopenDialog(false)">
+                <p class="dialog-title">Product Options</p>
+                <section class="dialog-form" id="action-dialog-content">
+                </section>
+            </section>
+        </section>
+    </section>
+    </section>
+    <script type="text/javascript">
+        canvasSearchList();
+    </script>
+</body>
+
+</html>

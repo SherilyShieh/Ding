@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Store</title>
+    <link type="text/css" rel="styleSheet" href="../style/ding.css" />
+    <link type="text/css" rel="styleSheet" href="../style/product.css" />
+    <link type="text/css" rel="styleSheet" href="../style/store.css" />
+    <link type="text/css" rel="styleSheet" href="../style/search.css" />
+    <script type="text/javascript" src="../common/common.js"></script>
+    <script type="text/javascript" src="mystore.js"></script>
+    <script type="text/javascript" src="../search/search.js"></script>
+</head>
+
+<body>
+    <div id="my-head"></div>
+    <div class="content" id="store-detail-info">
+    </div>
+    <div id="my-footer"></div>
+    <div id="my-toast"></div>
+    <div id="feedback-center"></div>
+    <section class="dialog-mask" id="dialog-mask-buy-add">
+        <section class="dialog-position">
+            <section class="dialog" id="buy-add-dialog">
+                <img src="../../static/delete1.png" class="close-dialog" onclick="closeopenDialog(false)">
+                <p class="dialog-title">Product Options</p>
+                <section class="dialog-form" id="action-dialog-content">
+                </section>
+            </section>
+        </section>
+    </section>
+    <script type="text/javascript">
+        createStoreView();
+        canvasSearchList();
+    </script>
+</body>
+
+</html>

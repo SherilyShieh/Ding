@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Account</title>
+    <link type="text/css" rel="styleSheet" href="../style/ding.css" />
+    <link type="text/css" rel="styleSheet" href="../style/account.css" />
+    <link type="text/css" rel="styleSheet" href="../style/search.css" />
+    <script type="text/javascript" src="../common/common.js"></script>
+</head>
+
+<body>
+    <div id="my-head"></div>
+    <div class="content account-div">
+        <section class="nav-div">
+            <section class="account-nav" id="profile">
+                <img src="../../static/profile_unselected.png" id="profile-icon">
+                <span id="profile-title">Profile</span>
+            </section>
+            <section class="account-nav" id="store">
+                <img src="../../static/store_unselected.png" id="store-icon">
+                <span id="store-title">Store</span>
+            </section>
+            <section class="account-nav" id="orders">
+                <img src="../../static/orders_unselected.png" id="orders-icon">
+                <span id="orders-title">Orders</span>
+            </section>
+            <section class="account-nav" id="collections">
+                <img src="../../static/collections_unselected.png" id="collections-icon">
+                <span id="collections-title">Collections</span>
+            </section>
+        </section>
+        <section class="nav-info">
+            <section class="nav-profile" id="profile-info">
+                <section class="nav-info-title">
+                    <span>My Profile</span>
+                </section>
+                <section class="nav-detail">
+                    <section class="profile-form">
+                        <section class="form-item">
+                            <span>Legal Name:</span>
+                            <input type="text" name="legalname" placeholder="Jilai Xie" disabled>
+                        </section>
+                        <section class="form-item">
+                            <span>Phone:</span> <input type="number" name="phone" placeholder="027-321-2675" onblur="checkUpdatePhone(this)" oninput="cancelErrorUpdatePhone(this)">
+                        </section>
+                        <span id="error-update-phone" class="error-msg-user" style="margin-top: 5px;margin-left: 110px;">Invalid phone number!</span>
+                        <section class="form-item">
+                            <span>Email:</span> <input type="email" name="email" placeholder="sherilyshieh@gmail.com" onblur="checkUpdateEmail(this)" oninput="cancelErrorUpdateEmail(this)">
+                        </section>
+                        <span id="error-update-email" class="error-msg-user" style="margin-top: 5px;margin-left: 110px;">Invalid email!</span>
+                        <section class="form-item">
+                            <span>Nick Name:</span> <input type="text" name="nickname" placeholder="Sherily Shieh">
+                        </section>
+                        <section class="form-item">
+                            <span>Address:</span> <input type="text" name="address" placeholder="18 Bell Street, Tawa, Wellington">
+                        </section>
+                        <input type="submit" value="Update" class="form-update" onclick="updateProfile()">
+                    </section>
+                </section>
+            </section>
+            <section class="nav-profile" id="store-info">
+                <section class="nav-info-title">
+                    <span>My Store</span>
+                    <img src="../../static/add_product.png" onclick="addProduct(true, -1)">
+                </section>
+                <section class="nav-detail">
+                    <section class="search-filter account-filter">
+                        <section class="filter-price common-margin-search">
+                            <section class="dropdown price">
+                                <section class="search-price" onclick="openAccountDp(true, 'account-price-sort')">
+                                    <span class="dropbtn" style="border: none;" id="account-price-sort-text">Price: Low to High</span>
+                                    <img src="../../static/down.png">
+                                </section>
+                                <section class="dropdown-content" id="account-price-sort">
+                                    <p onclick="changeDpTitle(this, 'account-price-sort', 'account-price-sort-text', 'Price: ')">Low to High</p>
+                                    <p onclick="changeDpTitle(this, 'account-price-sort', 'account-price-sort-text', 'Price: ')">High to Low</p>
+                                </section>
+                            </section>
+                        </section>
+                        <section class="filter-time common-margin-search">
+                            <section class="dropdown price">
+                                <section class="search-price" onclick="openAccountDp(true, 'account-time-sort')">
+                                    <span class="dropbtn" style="border: none;" id="account-time-sort-text">Time: Old to Latest</span>
+                                    <img src="../../static/down.png">
+                                </section>
+                                <section class="dropdown-content" id="account-time-sort">
+                                    <p onclick="changeDpTitle(this, 'account-time-sort', 'account-time-sort-text', 'Time: ')">Old to Latest</p>
+                                    <p onclick="changeDpTitle(this, 'account-time-sort', 'account-time-sort-text', 'Time: ')">Latest to Old</p>
+                                </section>
+                            </section>
+                        </section>
+                        <section class="search-pagers">
+                            <img src="../../static/right.png" onclick="previous()">
+                            <span>1/100</span>
+                            <img src="../../static/left.png" onclick="next()">
+                            <span>To</span>
+                            <input type="text" name="index" placeholder="1" onkeydown="goToPage(event, this)">
+                        </section>
+                    </section>
+                    <section class="my-product-list" id="my-product-list">
+                    </section>
+                    <section class="empty-margin" id="my-product-list-empty">
+                        <section class="cart-empty">
+                            <img src="../../static/empty.png">
+                            <spn>Empty Product List~!</spn>
+                        </section>
+                    </section>
+                </section>
+            </section>
+            <section class="nav-profile" id="orders-info">
+                <section class="nav-info-title">
+                    <span>My Orders</span>
+                    <section class="dropdown price">
+                        <section class="search-price" onclick="openAccountDp(true, 'order-type')">
+                            <span class="dropbtn" style="border: none; color:white;" id="order-type-title">Sold</span>
+                            <img src="../../static/down2.png">
+                        </section>
+                        <section class="dropdown-content" id="order-type">
+                            <p onclick="changeOrderType(this, 'order-type', 'order-type-title', '', true)">Sold</p>
+                            <p onclick="changeOrderType(this, 'order-type', 'order-type-title', '', false)">Purchased</p>
+                        </section>
+                    </section>
+                </section>
+                <section class="nav-detail">
+                    <section class="search-filter account-filter">
+                        <section class="filter-price common-margin-search">
+                            <section class="dropdown price">
+                                <section class="search-price" onclick="openAccountDp(true, 'order-price-sort')">
+                                    <span class="dropbtn" style="border: none;" id="order-price-sort-text">Price: Low to High</span>
+                                    <img src="../../static/down.png">
+                                </section>
+                                <section class="dropdown-content" id="order-price-sort">
+                                    <p onclick="changeDpTitle(this, 'order-price-sort', 'order-price-sort-text', 'Price: ')">Low to High</p>
+                                    <p onclick="changeDpTitle(this, 'order-price-sort', 'order-price-sort-text', 'Price: ')">High to Low</p>
+                                </section>
+                            </section>
+                        </section>
+                        <section class="filter-time common-margin-search">
+                            <section class="dropdown price">
+                                <section class="search-price" onclick="openAccountDp(true, 'order-time-sort')">
+                                    <span class="dropbtn" style="border: none;" id="order-time-sort-text">Time: Old to Latest</span>
+                                    <img src="../../static/down.png">
+                                </section>
+                                <section class="dropdown-content" id="order-time-sort">
+                                    <p onclick="changeDpTitle(this, 'order-time-sort', 'order-time-sort-text', 'Time: ')">Old to Latest</p>
+                                    <p onclick="changeDpTitle(this, 'order-time-sort', 'order-time-sort-text', 'Time: ')">Latest to Old</p>
+                                </section>
+                            </section>
+                        </section>
+                        <section class="search-pagers">
+                            <img src="../../static/right.png" onclick="previous()">
+                            <span>1/100</span>
+                            <img src="../../static/left.png" onclick="next()">
+                            <span>To</span>
+                            <input type="text" name="index" placeholder="1" onkeydown="goToPage(event, this)">
+                        </section>
+                    </section>
+                    <section class="my-product-list" id="my-order-list">
+                    </section>
+                    <section class="empty-margin" id="my-order-list-empty">
+                        <section class="cart-empty">
+                            <img src="../../static/empty.png">
+                            <spn>Empty Order List~!</spn>
+                        </section>
+                    </section>
+                </section>
+            </section>
+            <section class="nav-profile" id="collections-info">
+                <section class="nav-info-title">
+                    <span>My Collections</span>
+                </section>
+                <section class="nav-detail">
+                    <section class="search-filter account-filter">
+                        <section class="filter-price common-margin-search">
+                            <section class="dropdown price">
+                                <section class="search-price" onclick="openAccountDp(true, 'collect-price-sort')">
+                                    <span class="dropbtn" style="border: none;" id="collect-price-sort-text">Price: Low to High</span>
+                                    <img src="../../static/down.png">
+                                </section>
+                                <section class="dropdown-content" id="collect-price-sort">
+                                    <p onclick="changeDpTitle(this, 'collect-price-sort', 'collect-price-sort-text', 'Price: ')">Low to High</p>
+                                    <p onclick="changeDpTitle(this, 'collect-price-sort', 'collect-price-sort-text', 'Price: ')">High to Low</p>
+                                </section>
+                            </section>
+                        </section>
+                        <section class="filter-time common-margin-search">
+                            <section class="dropdown price">
+                                <section class="search-price" onclick="openAccountDp(true, 'collect-time-sort')">
+                                    <span class="dropbtn" style="border: none;" id="collect-time-sort-text">Time: Old to Latest</span>
+                                    <img src="../../static/down.png">
+                                </section>
+                                <section class="dropdown-content" id="collect-time-sort">
+                                    <p onclick="changeDpTitle(this, 'collect-time-sort', 'collect-time-sort-text', 'Time: ')">Old to Latest</p>
+                                    <p onclick="changeDpTitle(this, 'collect-time-sort', 'collect-time-sort-text', 'Time: ')">Latest to Old</p>
+                                </section>
+                            </section>
+                        </section>
+                        <section class="search-pagers">
+                            <img src="../../static/right.png" onclick="previous()">
+                            <span>1/100</span>
+                            <img src="../../static/left.png" onclick="next()">
+                            <span>To</span>
+                            <input type="text" name="index" placeholder="1" onkeydown="goToPage(event, this)">
+                        </section>
+                    </section>
+                    <section class="my-product-list" id="my-collect-list">
+                    </section>
+                    <section class="empty-margin" id="my-collect-list-empty">
+                        <section class="cart-empty">
+                            <img src="../../static/empty.png">
+                            <spn>Empty Collection List~!</spn>
+                        </section>
+                    </section>
+                </section>
+            </section>
+
+    </div>
+    <div id="my-footer"></div>
+    <section class="dialog-mask" id="dialog-mask-account">
+        <section class="dialog-position">
+            <section class="dialog" id="add-dialog-account">
+                <img src="../../static/delete1.png" class="close-dialog" onclick="closeDialog()">
+                <p class="dialog-title" id="account-dialog-title">Add Product</p>
+                <section class="dialog-form">
+                    <section class="dialog-form-item">
+                        <label>Title</label>
+                        <input type="text" name="title">
+                    </section>
+                    <section class="dialog-form-item">
+                        <label>Price</label>
+                        <input type="text" name="price">
+                    </section>
+                    <section class="dialog-form-item">
+                        <label>Main picture</label>
+                        <input type="file" name="main_icon" accept="image/*" id="upload">
+                    </section class="dialog-form-item">
+                    <section class="dialog-form-item">
+                        <label>Count</label>
+                        <input type="text" name="count">
+                    </section>
+                    <section class="dialog-form-item">
+                        <label>Size</label>
+                        <input type="text" name="size">
+                    </section>
+                    <section class="dialog-form-item">
+                        <label>Color</label>
+                        <input type="text" name="color">
+                    </section>
+                    <section class="dialog-form-item">
+                        <label>Imgines</label>
+                        <input type="file" name="imgines" multiple>
+                    </section>
+                    <section class="dialog-form-item">
+                        <label>Description</label>
+                        <textarea name="description" cols="40" rows="8"></textarea>
+                    </section>
+                    <section class="dialog-form-item">
+                        <button type="submit" class="product-dialog-cancle" onclick="cancel()">Cancel</button>
+                        <button type="submit" class="product-dialog-confirm" onclick="submit()">Submit</button>
+                    </section>
+                </section>
+            </section>
+        </section>
+    </section>
+    <div id="my-toast"></div>
+    <div id="feedback-center"></div>
+    <script src="myaccount.js" type="text/javascript">
+    </script>
+</body>
+
+</html>
