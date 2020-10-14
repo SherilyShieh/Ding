@@ -23,8 +23,11 @@ function console_log($output, $with_script_tags = true) {
 //step4: check table data record by record
 while ( $row = mysqli_fetch_row($result) )
 { 
-    console_log($row);
-    if ( $row[1] == $x && $row[2] == $y )	
+    // console_log($row);
+    // console_log($x . $y);
+    if ( $row[1] == $x && $row[2] == $y )
+        console_log($row);
+        console_log($x . $y);	
         header ("location:http://www.weltec.ac.nz");
 }
 echo "<html>

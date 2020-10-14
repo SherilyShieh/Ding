@@ -1,6 +1,7 @@
 // import '../../data/mockdata.js';
 document.write("<script type='text/javascript' src='../../data/mockdata.js'></script>");
 document.write("<script src='../../data/jquery-3.5.1.min.js'></script>")
+document.write("<script type='text/javascript' src='../../data/api/index.js'></script>");
 
 var unselectedIcon = '../../static/unselected.png';
 var selectedIcon = '../../static/selected.png';
@@ -224,6 +225,40 @@ var footer = ['    <div class="bottom">',
     '    </div>'
 ].join("");
 
+function setCookie(key, value, expiredays, domain, path) {
+    var exdate = new Date();
+    exdate.setDate(exdate.getDate() + expiredays);
+    var str = expiredays ? `;expires=${exdate.toGMTString()}` : '';
+    str += domain ? `;domain=${domain}` : '';
+    str += path ? `;path=${path}` : '';
+    document.cookie = `${key}=${escape(value)}${str}`;
+}
+
+function getCookie(key) {
+    var reg = new RegExp(`(^| )${key}=([^;]*)(;|$)`);
+    var arr = document.cookie.match(reg);
+    if (arr) {
+        return unescape(arr[2]);
+    }
+    return '';
+}
+
+function clearCookie(name, domain, path) {
+    setCookie(name, '', 0, domain, path);
+}
+
+function getSessionStorage(key) {
+    let value = window.sessionStorage.getItem(key);
+    if (value) {
+        try {
+            return JSON.parse(value);
+        } catch (e) {
+            return null;
+        }
+    }
+    return null;
+}
+
 function showToast(val) {
     var toast = `<div class="common-toast">
                     <span>${val}</span>
@@ -242,7 +277,8 @@ function getElments(val) {
 function addWidegt(elem, sub) {
     var _self = getElments(elem);
     this.addP = function() {
-        _self.innerHTML = sub;
+        if (_self)
+            _self.innerHTML = sub;
     }
     return this;
 }
@@ -509,9 +545,16 @@ function openMyaccount(val) {
 
 function logout() {
     // todo
-    logoutAction();
+    Logout().then(data => {
+        console.log(data);
+        clearCookie('LOGIN_USER', '', '/');
+        showToast("Logout successfully!");
+        reset();
+    }).catch(err => {
+        showToast(err);
+    });
     closeDropdown();
-    reset();
+
 }
 
 
@@ -553,7 +596,7 @@ function initFilterDorp() {
 }
 // myaccount dropdown depend on the isLogin status show different dialog
 function openDropdown() {
-    if (isLoggedIn()) {
+    if (isLogin) {
         getElments('logined-dropdown').style.display = 'block';
     } else {
         getElments('unlogin-dropdown').style.display= 'block';
@@ -644,23 +687,32 @@ function closeLoginDialog() {
 function loginU() {
     if (CheckUserName() && (isShowRLoginPwd ? checkPassword(getElments('password-login-hide')) : checkPassword(getElments('password-login-hide')))) {
         var loginUser = {
-            accountName: '',
+            username: '',
             password: ''
         };
-        loginUser.accountName = getElments('account-name-login').value;
+        loginUser.username = getElments('account-name-login').value;
         loginUser.password = getElments('password-login-hide').value;
-        var rep = loginWithUser(loginUser);
-        if (rep.success){//login success
+        Login(loginUser).then((data) => {
             closeLoginDialog();
-        } else if (rep.errorCode == 1) {// incorrect pwd or account
+            setCookie('LOGIN_USER', JSON.stringify(data), 0, '', '/');
+            console.log(data);
+            reset();
+        }).catch((err) => {
             showErrorForLogin('Incorrect user account or password!');
-        } else if (rep.errorCode == 2) {// no user
-            showErrorForLogin('No user, please register!');
-        }
+            console.log(err);
+        });
+        // var rep = loginWithUser(loginUser);
+        // if (rep.success){//login success
+        //     closeLoginDialog();
+        // } else if (rep.errorCode == 1) {// incorrect pwd or account
+        //     showErrorForLogin('Incorrect user account or password!');
+        // } else if (rep.errorCode == 2) {// no user
+        //     showErrorForLogin('No user, please register!');
+        // }
     }
-    reset();
 
 }
+
 function login() {
     getElments('dialog-mask-login').style.display = 'block';
     getElments('login-dialog').style.display = 'block';
@@ -970,27 +1022,43 @@ function RegisterU() {
     && checkNickname(getElments('register-nickname')) && 
     (isShowRegisterPwd ? checkPasswordRegister(getElments('password-register-show')) : checkPasswordRegister(getElments('password-register-hide')))
     && (isShowRegisterConfirm ? checkConfirmInfo(getElments('confirm-show')) : checkConfirmInfo(getElments('confirm-hide')))) {
-        var rep = registerWithUser({
+        var request = {
             legalName: getElments('legal-name').value.trim(),
             address:getElments('register-address').value.trim(),
             email: getElments('register-emial').value.trim(),
             phone: getElments('register-phone').value.trim(),
             nickName: getElments('register-nickname').value.trim(),
             password: isShowRegisterPwd ? getElments('password-register-show').value.trim() : getElments('password-register-hide').value.trim()
-        });
-        if (rep) {
+        };
+        Register(request).then((data) => {
             closeRegisterDialog();
-            showToast('Register successfully!');
-        } else {
+            showToast(data + 'Please login!');
+            login();
+            
+        }).catch(err => {
             closeRegisterDialog();
             showToast('Registration failed!');
-        }
-        reset();
+        });
     }
 }
+
+function initUser() {
+    let jsonuser = getCookie('LOGIN_USER');
+    if (jsonuser) {
+        let user = JSON.parse(jsonuser);
+        console.log(user);
+        isLogin = true;
+        return user;
+    }
+    isLogin = false;
+    return null;
+   
+}
+var isLogin = false;
 function reset() {
-    if (getUser() && isLoggedIn()) {
-        getElments('account-name-dp').innerText = getUser().nickName;
+    let user = initUser();
+    if (user && isLogin) {
+        getElments('account-name-dp').innerText = user.nickname;
     } else {
         getElments('account-name-dp').innerText = 'My Account';
     }

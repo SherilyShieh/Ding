@@ -18,7 +18,9 @@ function console_log($output, $with_script_tags = true) {
     }
     echo $js_code;
 }
-// echo $_GET["name"];
+
+    $x = $_GET["username"];
+    $y = $_GET["password"];
     $user = 'root';
     $password = 'root';
     $db = 'ding_database';
@@ -47,8 +49,8 @@ function console_log($output, $with_script_tags = true) {
     } else {
         // echo "1111";
         // $result = mysqli_query($con, "SELECT * FROM student", MYSQLI_USE_RESULT);
-        $result = mysqli_query($con, "SELECT * FROM student", MYSQLI_STORE_RESULT);
-        // console_log($result);
+        $result = mysqli_query($con, "select * from student where Name = '$x';", MYSQLI_STORE_RESULT);
+        // console_log($x);
         $response = array();
         $index = 0;
         while($output = mysqli_fetch_row($result)) {

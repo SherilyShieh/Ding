@@ -1,3 +1,5 @@
+
+
 var mycart = new Array();
 var selectedList = new Array();
 var total = 10;

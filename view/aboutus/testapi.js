@@ -2,7 +2,7 @@ document.write("<script type='text/javascript' src='../../data/api/index.js'></s
 
 function testapi() {
     // debugger;
-    TestInterface().then((data) => {
+    TestInterface({ username: "Sherily", password: "123456" }).then((data) => {
         console.log("success::", data)
     }).catch(err => {
         console.log("failed:::", err)
