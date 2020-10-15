@@ -126,7 +126,7 @@ function changeNav(val) {
     if (val == 0) {
         initProfileView();
     } else if (val == 1) {
-        createProductsView();
+        createProductsView(1);
     } else if (val == 2) {
         createOrderView(true);
     } else if (val == 3) {
@@ -185,6 +185,26 @@ function changeDpTitle(el, dp, title, str) {
     openAccountDp(false, dp);
 }
 
+function previouspRoduct() {
+    showToast('previous');
+
+    if (productCount == 0) {
+        showToast("Current list is empty!")
+        return;
+    } else if (currentIndex <= 1) {
+        showToast("Current page is the first page!")
+        return;
+    } else {
+        currentIndex++;
+        createProductsView(currentIndex);
+
+    }
+}
+
+function nextProduct() {
+    showToast('next');
+}
+
 function previous() {
     showToast('previous');
 }
@@ -211,39 +231,62 @@ function submit() {
     showToast('success')
 }
 
-function createProductsView() {
+function updateProductPager(index) {
+    $('#product-pager').text(`${index}/${totalProductPage}`);
+}
+var productCount = 0;
+var currentIndex = 0;
+var totalProductPage = 0;
+
+function createProductsView(index) {
     var productsView = '';
     var list = getSearchList();
-    if (list.length) {
-        getElments('my-product-list').style.display = 'flex';
-        getElments('my-product-list-empty').style.display = 'none';
-        list.forEach((item, index) => {
-            productsView += `
-            <section class="my-product-item">
-            <img src="${item.icon}" class="product-img" onclick="openProduct(${item.id})">
-            <section class="item-detail">
-                <span class="item-name">${item.title}</span>
-                <span class="item-price">NZ$${item.price}</span>
-                <span class="item-size">Size: ${item.size.join('/')}</span>
-                <span class="item-color"> Color: ${item.color.join('/')}</span>
-                <section class="item-action">
-                    <img src="../../static/edit.png" onclick="addProduct(false, ${index})">
-                    <img src="../../static/bin3.png" onclick="deleteProduct(${index})">
+    let user = initUser();
+    GetProductsInStore({
+        userid: user.id,
+        priceorder: 'DESC',
+        timeorder: 'ASC',
+        page: index
+    }).then(data => {
+        productCount = data.count;
+        currentIndex = productCount ? 1 : 0;
+        totalProductPage = Math.ceil(productCount / 10);
+        updateProductPager(currentIndex);
+        if (data.count) {
+            getElments('my-product-list').style.display = 'flex';
+            getElments('my-product-list-empty').style.display = 'none';
+            list.forEach((item, index) => {
+                productsView += `
+                <section class="my-product-item">
+                <img src="${item.icon}" class="product-img" onclick="openProduct(${item.id})">
+                <section class="item-detail">
+                    <span class="item-name">${item.title}</span>
+                    <span class="item-price">NZ$${item.price}</span>
+                    <span class="item-size">Size: ${item.size.join('/')}</span>
+                    <span class="item-color"> Color: ${item.color.join('/')}</span>
+                    <section class="item-action">
+                        <img src="../../static/edit.png" onclick="addProduct(false, ${index})">
+                        <img src="../../static/bin3.png" onclick="deleteProduct(${index})">
+                    </section>
                 </section>
-            </section>
-            </section>`;
-        });
-        addWidegt('my-product-list', productsView).addP();
-    } else {
-        getElments('my-product-list').style.display = 'none';
-        getElments('my-product-list-empty').style.display = 'flex';
-    }
+                </section>`;
+            });
+            addWidegt('my-product-list', productsView).addP();
+        } else {
+            getElments('my-product-list').style.display = 'none';
+            getElments('my-product-list-empty').style.display = 'flex';
+        }
+    }).catch(err => {
+        showToast(err);
+    });
+
 
 }
 
 function createOrderView(isSold) {
     var productsView = '';
     var list = getSearchList();
+
     if (list.length) {
         getElments('my-order-list').style.display = 'flex';
         getElments('my-order-list-empty').style.display = 'none';

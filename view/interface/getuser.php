@@ -5,8 +5,8 @@
     Include_once "./common.php";
 
     // get request
-    $name = $_GET["username"];
-    $pwd = $_GET["password"];
+    $userid = $_GET["userid"];
+
 
     // init connection
     Global $user;
@@ -16,7 +16,7 @@
     Global $port;
     $con = new mysqli($host,$user,$password,$db,$port);
 
-    $sql = "SELECT * FROM User WHERE phone_nz = '$name' OR  email = '$name' AND password = '$pwd'";
+    $sql = "SELECT * FROM User WHERE id = '$userid'";
     if (!$con) {
         die("connect error:" . mysqli_connect_error());
         $status1 = new Status(500, "connect error:" . mysqli_connect_error());

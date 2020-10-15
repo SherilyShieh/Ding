@@ -5,6 +5,9 @@
 
     // get request
     $userid = $_GET["userid"];
+    $price_order = $_GET["priceorder"];
+    $time_order = $_GET["timeorder"];
+    $page = $_GET["page"];
 
     // init connection
     Global $user;
@@ -14,16 +17,45 @@
     Global $port;
     $con = new mysqli($host,$user,$password,$db,$port);
 
-    function getProduct($store_id, $con) {
+    function getProduct($store_id, $con, $page, $price_order, $time_order) {
         $sql = "SELECT COUNT(*) FROM Product where store_id = '$store_id'";
         $result = mysqli_query($con, $sql);
-        $output = mysqli_fetch_row($result);
-        echo $output[0];
-        // $sql = "SELECT * FROM Product WHERE store_id = '$store_id'";
-        // $result = mysqli_query($con, $sql);
+        if (!$result) {
+            $resp = "Query failed";
+            $status = new Status(500, "query error:" . mysqli_error($con));
+            return new Response($resp, $status);
+        } else {
+            $output = mysqli_fetch_row($result);
+            if ($output[0] > 0) {
+                $start=($page-1)*10;
+                $end = $page*10;
+                $sql = "SELECT * FROM Product WHERE store_id = '$store_id' ORDER BY product_price $price_order, update_time $time_order limit $start, $end";
+                $result = mysqli_query($con, $sql);
+                if (!$result) {
+                    $resp = "Query failed";
+                    $status = new Status(500, "query error:" . mysqli_error($con));
+                    return new Response($resp, $status);
+                } else { 
+                    $response = array();
+                    $index = 0;
+                    while($output = mysqli_fetch_row($result)) {
+                        $product = new Product($output[0], $output[1], $output[3], $output[4], $output[5], $output[6],$output[7], $output[8], $output[9], $output[10], $output[11], $output[12]);
+                        $response[$index] = $product;
+                        $index++;
+                    }
+                    $status = new Status(200, "query successfully!");
+                    return new Response($response, $status);
+                }
+            } else {
+                $list_res = new ListResult(0, null);
+                $status = new Status(200, "query successfully");
+                return new Response($list_res, $status);
+            }
+        }
+
     }
    
-    $sql = "SELECT * FROM Product WHERE owner_id = '$userid'";
+    $sql = "SELECT * FROM Store WHERE owner_id = '$userid'";
     if (!$con) {
         die("connect error:" . mysqli_connect_error());
         $status1 = new Status(500, "connect error:" . mysqli_connect_error());
@@ -38,7 +70,7 @@
         } else if (mysqli_num_rows($result) == 1) { 
             $output = mysqli_fetch_row($result);
             $store_id = $output[0];
-            getProduct($store_id, $con);
+            $response2 = getProduct($store_id, $con, $page, $price_order, $time_order);
         } else {
             $resp = "Query failed";
             $status2 = new Status(503, "Multiple stores");
