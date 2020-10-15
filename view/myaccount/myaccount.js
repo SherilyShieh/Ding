@@ -4,9 +4,40 @@ registerNav(0);
 registerNav(1);
 registerNav(2);
 registerNav(3);
+GetRequest();
+console.log("account:", initUser());
+
+
+function GetRequest() {
+    let user = initUser();
+    if (!user) {
+        showToast("Please login!")
+        window.open('http://localhost:8088/view/home/Home.html', '_self');
+        return;
+    }
+    const url = location.search;
+    let theRequest = new Object();
+    if (url.indexOf("?") != -1) {
+        let str = url.substr(1);
+        strs = str.split("&");
+        for (let i = 0; i < strs.length; i++) {
+            theRequest[strs[i].split("=")[0]] = unescape(strs[i].split("=")[1]);
+        }
+    }
+    console.log(theRequest);
+
+    let nav = Number(theRequest.nav);
+    changeNav(nav)
+}
 
 function registerNav(val) {
-    getElments(navmenu[val]).addEventListener("click", () => changeNav(val));
+    getElments(navmenu[val]).addEventListener("click", () => openNav(val));
+}
+
+function openNav(val) {
+    let location = window.location;
+    let link = `${location.origin}${location.pathname}?nav=${val}`;
+    window.open(link, '_self')
 }
 
 function getElments(val) {
@@ -32,6 +63,57 @@ function changeStyle(val, isSelected) {
     }
 }
 
+function updateProfile() {
+
+    let phone_nz = $('#profile-phone').val().trim();
+    let email = $('#profile-email').val().trim();
+    let nickname = $('#profile-nickname').val().trim();
+    let address = $('#profile-address').val().trim();
+    if (!phone_nz && !email && !nickname && !address) {
+        showToast("Please input some information!")
+        return;
+    }
+    let modify = {
+        phone_nz,
+        email,
+        nickname,
+        address
+    }
+    for (var key in modify) {
+        if (modify[key] === '') {
+            delete modify[key]
+        }
+    }
+    let user = initUser();
+    let requet = { userid: user.id, info: modify }
+    ModifyProfile(requet).then(data => {
+        for (var key in modify) {
+            if (key == 'phone_nz') {
+                user['phone'] = modify['phone_nz'];
+            } else {
+                user[key] = modify[key];
+            }
+        }
+        setCookie('LOGIN_USER', JSON.stringify(user), 0, '', '/');
+        reset();
+        initProfileView()
+            // console.log(user);
+    }).catch(err => {
+        showToast(err);
+    });
+    // console.log(modify);
+}
+
+function initProfileView() {
+    let user = initUser();
+    $('#profile-name').attr('value', user.legalName);
+    $('#profile-phone').attr('placeholder', user.phone);
+    $('#profile-email').attr('placeholder', user.email);
+    $('#profile-nickname').attr('placeholder', user.nickname);
+    $('#profile-address').attr('placeholder', user.address);
+}
+
+
 function changeNav(val) {
     var i = 0;
     for (i = 0; i < 4; i++) {
@@ -41,7 +123,9 @@ function changeNav(val) {
             changeStyle(navmenu[i], false);
         }
     }
-    if (val == 1) {
+    if (val == 0) {
+        initProfileView();
+    } else if (val == 1) {
         createProductsView();
     } else if (val == 2) {
         createOrderView(true);
@@ -49,6 +133,7 @@ function changeNav(val) {
         createCollectionView();
     }
 }
+
 
 function addProduct(isAdd, id) {
     getElments('account-dialog-title').innerText = isAdd ? 'Add Product' : 'Edit Product';
@@ -77,7 +162,7 @@ function cancelErrorUpdatePhone(el) {
 
 function checkUpdateEmail(el) {
     if (el.value.trim()) {
-        if (!isTelCode(el.value.trim())) {
+        if (!isEmail(el.value.trim())) {
             el.style.border = errorBorder;
             getElments('error-update-email').style.display = 'block';
         }
@@ -89,9 +174,7 @@ function cancelErrorUpdateEmail(el) {
     getElments('error-update-email').style.display = 'none';
 }
 
-function updateProfile() {
-    showToast('Update success');
-}
+
 
 function openAccountDp(isOpen, dp) {
     getElments(dp).style.display = isOpen ? 'block' : 'none';

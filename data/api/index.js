@@ -65,3 +65,25 @@ function CreateDepartment(opt) {
         isFile: false
     });
 }
+
+function ModifyProfile(opt) {
+    return http({
+        method: 'POST',
+        url: '/view/interface/modifyprofile.php',
+        path: '',
+        body: opt,
+        header: '',
+        isFile: false
+    });
+}
+
+function GetProductsInStore(opt) {
+    return http({
+        method: 'GET',
+        url: '/view/interface/getproductsinstore.php',
+        path: '',
+        body: opt,
+        header: '',
+        isFile: false
+    });
+}

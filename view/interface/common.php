@@ -1,4 +1,41 @@
 <?php
+    class ListResult {
+        var $count;
+        var $list;
+        function __construct($par1, $par2) {
+            $this->count = $par1;
+            $this->list = $par2;
+        }
+    }
+    class Product {
+        var $id;
+        var $store_id;
+        var $department;
+        var $type;
+        var $product_name;
+        var $product_icon;
+        var $product_size;
+        var $product_price;
+        var $product_color;
+        var $product_detail;
+        var $create_time;
+        var $update_time;
+
+        function __construct($par1, $par2, $par3, $par4, $par5, $par6, $par7, $par8, $par9, $par10, $par11, $par12) {
+            $this->id = $par1;
+            $this->store_id = $par2;
+            $this->department = $par3;
+            $this->type = $par4;
+            $this->product_name = $par5;
+            $this->product_icon = $par6;
+            $this->product_size = $par7;
+            $this->product_price = $par8;
+            $this->product_color = $par9;
+            $this->product_detail = $par10;
+            $this->create_time = $par11;
+            $this->update_time = $par12;
+        }
+    }
     class Response {
         var $data;
         var $status;

@@ -9,6 +9,7 @@
     <link type="text/css" rel="styleSheet" href="../style/account.css" />
     <link type="text/css" rel="styleSheet" href="../style/search.css" />
     <script type="text/javascript" src="../common/common.js"></script>
+
 </head>
 
 <body>
@@ -41,21 +42,21 @@
                     <section class="profile-form">
                         <section class="form-item">
                             <span>Legal Name:</span>
-                            <input type="text" name="legalname" placeholder="Jilai Xie" disabled>
+                            <input type="text" name="legalname" placeholder="Jilai Xie" id="profile-name" disabled>
                         </section>
                         <section class="form-item">
-                            <span>Phone:</span> <input type="number" name="phone" placeholder="027-321-2675" onblur="checkUpdatePhone(this)" oninput="cancelErrorUpdatePhone(this)">
+                            <span>Phone:</span> <input type="number" name="phone" placeholder="027-321-2675" id="profile-phone" onblur="checkUpdatePhone(this)" oninput="cancelErrorUpdatePhone(this)">
                         </section>
                         <span id="error-update-phone" class="error-msg-user" style="margin-top: 5px;margin-left: 110px;">Invalid phone number!</span>
                         <section class="form-item">
-                            <span>Email:</span> <input type="email" name="email" placeholder="sherilyshieh@gmail.com" onblur="checkUpdateEmail(this)" oninput="cancelErrorUpdateEmail(this)">
+                            <span>Email:</span> <input type="email" name="email" id="profile-email" placeholder="sherilyshieh@gmail.com" onblur="checkUpdateEmail(this)" oninput="cancelErrorUpdateEmail(this)">
                         </section>
                         <span id="error-update-email" class="error-msg-user" style="margin-top: 5px;margin-left: 110px;">Invalid email!</span>
                         <section class="form-item">
-                            <span>Nick Name:</span> <input type="text" name="nickname" placeholder="Sherily Shieh">
+                            <span>Nick Name:</span> <input type="text" name="nickname" id="profile-nickname" placeholder="Sherily Shieh">
                         </section>
                         <section class="form-item">
-                            <span>Address:</span> <input type="text" name="address" placeholder="18 Bell Street, Tawa, Wellington">
+                            <span>Address:</span> <input type="text" name="address" id="profile-address" placeholder="18 Bell Street, Tawa, Wellington">
                         </section>
                         <input type="submit" value="Update" class="form-update" onclick="updateProfile()">
                     </section>

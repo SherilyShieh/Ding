@@ -530,8 +530,12 @@ function quickSearch(dep, type) {
 }
 function search() {
     var key = getElments('common-search-bar').value;
+    if (key) {
     // alert(key);
-    window.open(`../../view/search/search.html?keyword=${key}`, '_self');
+        window.open(`../../view/search/search.html?keyword=${key}`, '_self');
+    } else {
+        showToast("please input keyword!")
+    }
     closeDropdown();
 
 }
@@ -550,6 +554,7 @@ function logout() {
         clearCookie('LOGIN_USER', '', '/');
         showToast("Logout successfully!");
         reset();
+        window.open('http://localhost:8088/view/home/Home.html', '_self');
     }).catch(err => {
         showToast(err);
     });
