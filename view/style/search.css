@@ -22,6 +22,10 @@
     align-items: center;
 }
 
+.input-match-parent {
+    flex: 1;
+}
+
 .price {
     margin-right: 10px;
 }

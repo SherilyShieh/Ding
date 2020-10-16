@@ -14,6 +14,7 @@
         var $type;
         var $product_name;
         var $product_icon;
+        var $product_content_img;
         var $product_size;
         var $product_price;
         var $product_color;
@@ -21,19 +22,20 @@
         var $create_time;
         var $update_time;
 
-        function __construct($par1, $par2, $par3, $par4, $par5, $par6, $par7, $par8, $par9, $par10, $par11, $par12) {
+        function __construct($par1, $par2, $par3, $par4, $par5, $par6, $par7, $par8, $par9, $par10, $par11, $par12, $par13) {
             $this->id = $par1;
             $this->store_id = $par2;
             $this->department = $par3;
             $this->type = $par4;
             $this->product_name = $par5;
             $this->product_icon = $par6;
-            $this->product_size = $par7;
-            $this->product_price = $par8;
-            $this->product_color = $par9;
-            $this->product_detail = $par10;
-            $this->create_time = $par11;
-            $this->update_time = $par12;
+            $this->product_content_img = $par7;
+            $this->product_size = $par8;
+            $this->product_price = $par9;
+            $this->product_color = $par10;
+            $this->product_detail = $par11;
+            $this->create_time = $par12;
+            $this->update_time = $par13;
         }
     }
     class Response {

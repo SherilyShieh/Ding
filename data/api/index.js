@@ -87,3 +87,25 @@ function GetProductsInStore(opt) {
         isFile: false
     });
 }
+
+function CreateProduct(opt) {
+    return http({
+        method: 'POST',
+        url: '/view/interface/createproduct.php',
+        path: '',
+        body: opt,
+        header: '',
+        isFile: false
+    });
+}
+
+function ModifyProduct(opt) {
+    return http({
+        method: 'POST',
+        url: '/view/interface/modifyproduct.php',
+        path: '',
+        body: opt,
+        header: '',
+        isFile: false
+    });
+}

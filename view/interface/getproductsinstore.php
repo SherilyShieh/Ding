@@ -26,7 +26,8 @@
             return new Response($resp, $status);
         } else {
             $output = mysqli_fetch_row($result);
-            if ($output[0] > 0) {
+            $total_count = $output[0];
+            if ($total_count > 0) {
                 $start=($page-1)*10;
                 $end = $page*10;
                 $sql = "SELECT * FROM Product WHERE store_id = '$store_id' ORDER BY product_price $price_order, update_time $time_order limit $start, $end";
@@ -39,12 +40,13 @@
                     $response = array();
                     $index = 0;
                     while($output = mysqli_fetch_row($result)) {
-                        $product = new Product($output[0], $output[1], $output[3], $output[4], $output[5], $output[6],$output[7], $output[8], $output[9], $output[10], $output[11], $output[12]);
+                        $product = new Product($output[0], $output[1], $output[2], $output[3], $output[4], urldecode($output[5]),urldecode($output[6]), $output[7], $output[8], $output[9], $output[10], $output[11], $output[12]);
                         $response[$index] = $product;
                         $index++;
                     }
+                    $list_res = new ListResult($total_count, $response);
                     $status = new Status(200, "query successfully!");
-                    return new Response($response, $status);
+                    return new Response($list_res, $status);
                 }
             } else {
                 $list_res = new ListResult(0, null);
