@@ -1,4 +1,15 @@
 <?php
+    class Store {
+        var $id;
+        var $owner_id;
+        var $store_name;
+
+        function __construct($par1, $par2, $par3) {
+            $this->id = $par1;
+            $this->owner_id = $par2;
+            $this->store_name = $par3;
+        }
+    }
     class ListResult {
         var $count;
         var $list;

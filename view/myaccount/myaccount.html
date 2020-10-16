@@ -292,6 +292,21 @@
             </section>
         </section>
     </section>
+    <section class="dialog-mask" id="dialog-mask-delete">
+        <section class="dialog-position">
+            <section class="dialog" id="delete-dialog-product" style="padding: 5px 20px;">
+                <img src="../../static/delete1.png" class="close-dialog" onclick="closeDeleteDialog()">
+                <p class="dialog-title">Delete Product</p>
+                <section class="dialog-form-item">
+                    <p>Do you want to delete current product?</p>
+                </section>
+                <section class="dialog-form-item">
+                    <button class="product-dialog-cancle" style="margin-left: 0px;" onclick="cancelDelete()">Cancel</button>
+                    <button class="product-dialog-confirm" onclick="Confirm()">Confirm</button>
+                </section>
+            </section>
+        </section>
+    </section>
     <div id="my-toast"></div>
     <div id="feedback-center"></div>
     <script src="myaccount.js" type="text/javascript">

@@ -7,7 +7,7 @@
     //img type
     $typelist=array("image/jpeg","image/jpg","image/png","image/gif");
     $path="./uploads/";// define one floder to store pictures in serve
-    $link_path = "http://localhost:8088/view/interface/uploads/";
+    $link_path = "/view/interface/uploads/";
     //Filter error numbers in uploaded files
     if($upfile["error"]>0){
         switch($upfile['error']){//error code

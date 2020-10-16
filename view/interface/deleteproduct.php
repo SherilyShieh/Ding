@@ -4,7 +4,9 @@
     Include_once "./common.php";
 
     // get request
-    $storeid = $_GET["storeid"];
+    $body = file_get_contents('php://input');
+    $request = json_decode($body);
+
     // init connection
     Global $user;
     Global $password;
@@ -13,7 +15,8 @@
     Global $port;
     $con = new mysqli($host,$user,$password,$db,$port);
 
-    $sql = "SELECT * FROM store WHERE id = $storeid";
+    $sql = "DELETE FROM product WHERE id = $request->id";
+
     if (!$con) {
         die("connect error:" . mysqli_connect_error());
         $status1 = new Status(500, "connect error:" . mysqli_connect_error());
@@ -22,21 +25,16 @@
     } else{
         $result = mysqli_query($con, $sql);
         if (!$result) {
-            $resp = "Get store's information falied!";
+            $resp = "Delete falied";
             $status2 = new Status(500, "query error:" . mysqli_error($con));
-            $response2 = new Response($resp, $status2);
-        } else if (mysqli_num_rows($result) == 1) { 
-            $output = mysqli_fetch_row($result);
-            $store = new Store($output[0], $output[1], $output[2]);
-            $status2 = new Status(200, "Get store's infromation successfully!");
-            $response2 = new Response($store, $status2);
         } else {
-            $resp = "Multiple stores!";
-            $status2 = new Status(503, "Multiple stores!");
-            $response2 = new Response($resp, $status2);
+            $resp = "Delete successfully";
+            $status2 = new Status(200, "Delete successfully");
         }
+        $response2 = new Response($resp, $status2);
         JSON_STRING($response2);
 
     }
     mysqli_close($con);
+
 ?>

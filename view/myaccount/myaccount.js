@@ -5,14 +5,16 @@ registerNav(1);
 registerNav(2);
 registerNav(3);
 GetRequest();
-console.log("account:", initUser());
 
-
+// ====================== common tools in account page start================================
+/**
+ * get query info refresh page
+ */
 function GetRequest() {
     let user = initUser();
     if (!user) {
         showToast("Please login!")
-        window.open('http://localhost:8088/view/home/Home.html', '_self');
+        window.open(`${window.location.origin}/view/home/Home.html`, '_self');
         return;
     }
     const url = location.search;
@@ -30,20 +32,54 @@ function GetRequest() {
     changeNav(nav)
 }
 
+/**
+ * 
+ * @param {*} val 
+ * change navigation bar & sub view
+ */
+function changeNav(val) {
+    var i = 0;
+    for (i = 0; i < 4; i++) {
+        if (i == val) {
+            changeStyle(navmenu[val], true);
+        } else {
+            changeStyle(navmenu[i], false);
+        }
+    }
+    if (val == 0) {
+        initProfileView();
+    } else if (val == 1) {
+        createProductsView(1);
+    } else if (val == 2) {
+        createOrderView();
+    } else if (val == 3) {
+        createCollectionView();
+    }
+}
+
+/**
+ * Add onclick listener for each nav button
+ * @param {*} val 
+ */
 function registerNav(val) {
     getElments(navmenu[val]).addEventListener("click", () => openNav(val));
 }
 
+/**
+ * show different type sub view via query
+ * @param {*} val 
+ */
 function openNav(val) {
     let location = window.location;
     let link = `${location.origin}${location.pathname}?nav=${val}`;
     window.open(link, '_self')
 }
 
-function getElments(val) {
-    return document.getElementById(val);
-}
-
+/**
+ * change sub view
+ * @param {*} val 
+ * @param {*} isSelected 
+ */
 function changeStyle(val, isSelected) {
     var title = val + "-title";
     var icon = val + "-icon";
@@ -62,7 +98,10 @@ function changeStyle(val, isSelected) {
         return;
     }
 }
-
+/**
+ * delete the key whoes value is empty in the object
+ * @param {*} obj 
+ */
 function formatObject(obj) {
     if (obj) {
         for (var key in obj) {
@@ -76,8 +115,44 @@ function formatObject(obj) {
 
 }
 
-function updateProfile() {
 
+function openAccountDp(isOpen, dp) {
+    getElments(dp).style.display = isOpen ? 'block' : 'none';
+}
+
+function changeDpTitle(el, dp, title, str, isProduct) {
+    getElments(title).innerText = str + el.innerText;
+    openAccountDp(false, dp);
+    if (isProduct) {
+        createProductsView(1);
+    } else {
+        createOrderView();
+    }
+}
+
+function strCovertToList(val) {
+    if (val) {
+        return val.split('/');
+    }
+    return [];
+
+}
+
+function checkLoginStatus() {
+    let user = initUser();
+    if (user) {
+        return user;
+    }
+    showToast("Please Login");
+    window.open(`${window.location.origin}/view/home/Home.html`, '_self');
+    return null;
+
+}
+// ====================== common tools in account page end================================
+
+
+// ======================== profile start=============================
+function updateProfile() {
     let phone_nz = $('#profile-phone').val().trim();
     let email = $('#profile-email').val().trim();
     let nickname = $('#profile-nickname').val().trim();
@@ -106,11 +181,9 @@ function updateProfile() {
         setCookie('LOGIN_USER', JSON.stringify(user), 0, '', '/');
         reset();
         initProfileView()
-            // console.log(user);
     }).catch(err => {
         showToast(err);
     });
-    // console.log(modify);
 }
 
 function initProfileView() {
@@ -120,45 +193,6 @@ function initProfileView() {
     $('#profile-email').attr('placeholder', user.email);
     $('#profile-nickname').attr('placeholder', user.nickname);
     $('#profile-address').attr('placeholder', user.address);
-}
-
-
-function changeNav(val) {
-    var i = 0;
-    for (i = 0; i < 4; i++) {
-        if (i == val) {
-            changeStyle(navmenu[val], true);
-        } else {
-            changeStyle(navmenu[i], false);
-        }
-    }
-    if (val == 0) {
-        initProfileView();
-    } else if (val == 1) {
-        createProductsView(1);
-    } else if (val == 2) {
-        createOrderView();
-    } else if (val == 3) {
-        createCollectionView();
-    }
-}
-
-var isCreate = false;
-var modifyPId = 0;
-
-function addProduct(isAdd, id) {
-    isCreate = isAdd;
-    modifyPId = id;
-    getElments('account-dialog-title').innerText = isAdd ? 'Add Product' : 'Edit Product';
-    getElments('dialog-mask-account').style.display = 'block';
-    getElments('add-dialog-account').style.display = 'block';
-}
-
-function closeDialog() {
-    restForm();
-    getElments('dialog-mask-account').style.display = 'none';
-    getElments('add-dialog-account').style.display = 'none';
-
 }
 
 function checkUpdatePhone(el) {
@@ -188,21 +222,27 @@ function cancelErrorUpdateEmail(el) {
     el.style.border = defaultBorder;
     getElments('error-update-email').style.display = 'none';
 }
+// ======================== profile end=============================
 
 
 
-function openAccountDp(isOpen, dp) {
-    getElments(dp).style.display = isOpen ? 'block' : 'none';
+// ======================== product start ==========================
+var isCreate = false;
+var modifyPId = 0;
+
+function addProduct(isAdd, id) {
+    isCreate = isAdd;
+    modifyPId = id;
+    getElments('account-dialog-title').innerText = isAdd ? 'Add Product' : 'Edit Product';
+    getElments('dialog-mask-account').style.display = 'block';
+    getElments('add-dialog-account').style.display = 'block';
 }
 
-function changeDpTitle(el, dp, title, str, isProduct) {
-    getElments(title).innerText = str + el.innerText;
-    openAccountDp(false, dp);
-    if (isProduct) {
-        createProductsView(1);
-    } else {
-        createOrderView();
-    }
+function closeDialog() {
+    restForm();
+    getElments('dialog-mask-account').style.display = 'none';
+    getElments('add-dialog-account').style.display = 'none';
+
 }
 
 function previouspRoduct() {
@@ -244,21 +284,6 @@ function goToProductPage(event, elem) {
     }
 }
 
-function previous() {
-    showToast('previous');
-}
-
-function next() {
-    showToast('next');
-}
-
-function goToPage(event, elem) {
-    var evt = window.event || event;
-    if (evt.keyCode == 13) {
-        showToast(`go to page ${elem.value}`);
-    }
-}
-
 function restForm() {
     getElments('product-title').value = "";
     getElments('product-price').value = "";
@@ -297,46 +322,6 @@ function validForm(name, price, icon, color, department, type, size, img, detail
 
 function cancel() {
     closeDialog();
-
-}
-
-function strCovertToList(val) {
-    if (val) {
-        return val.split('/');
-    }
-    return [];
-
-}
-
-function checkLoginStatus() {
-    let user = initUser();
-    if (user) {
-        return user;
-    }
-    showToast("Please Login");
-    window.open('http://localhost:8088/view/home/Home.html', '_self');
-    return null;
-
-}
-let price_order = "ASC"; // ASC/DESC
-let time_order = "DESC";
-
-function formatStr(str) {
-    if (str) {
-        let arr = str.split('\'');
-        let name = '';
-        arr.forEach((item, index) => {
-            if (index === 0) {
-                name = item;
-            } else {
-                name = `${name}''${item}`;
-            }
-
-        });
-        return name;
-    }
-    return '';
-
 }
 
 function createProduct(user, product_name, product_price, icon, product_color, department, type, product_size, content_img, product_detail) {
@@ -492,6 +477,12 @@ function updateProductPager(index) {
     $('#product-pager').text(`${index}/${totalProductPage}`);
 }
 
+/**
+ * read img from local & show it
+ * @param {*} id1 
+ * @param {*} id2 
+ * @param {*} id3 
+ */
 function showIcon(id1, id2, id3) {
 
     let icon = $(id1)[0].files[0];
@@ -516,7 +507,6 @@ var productCount = 0;
 var currentIndex = 0;
 var totalProductPage = 0;
 
-
 function createProductsView(pageIndex) {
     console.log(getElments('account-price-sort-text').innerText);
     console.log(getElments('account-time-sort-text').innerText);
@@ -539,10 +529,10 @@ function createProductsView(pageIndex) {
             getElments('my-product-list').style.display = 'flex';
             getElments('my-product-list-empty').style.display = 'none';
             data.list.forEach((item, index) => {
-                console.log('url', item.product_icon);
+                let img = `${window.location.origin}${item.product_icon}`;
                 productsView += `
                 <section class="my-product-item">
-                <img src="${item.product_icon}" class="product-img" onclick="openProduct(${item.id})">
+                <img src="${img}" class="product-img" onclick="openProduct(${item.id})">
                 <section class="item-detail">
                     <span class="item-name">${item.product_name}</span>
                     <span class="item-price">NZ$${item.product_price}</span>
@@ -564,7 +554,61 @@ function createProductsView(pageIndex) {
         showToast(err);
     });
 
+}
 
+
+// ----------- delete product ----------------
+var deleteTargetId;
+
+function deleteProduct(index) {
+    deleteTargetId = index;
+    getElments('dialog-mask-delete').style.display = 'block';
+    getElments('delete-dialog-product').style.display = 'block';
+}
+
+function closeDeleteDialog() {
+    getElments('dialog-mask-delete').style.display = 'none';
+    getElments('delete-dialog-product').style.display = 'none';
+}
+
+function cancelDelete() {
+    closeDeleteDialog();
+}
+
+function Confirm() {
+    DeleteProduct({ id: deleteTargetId }).then(data => {
+        closeDeleteDialog();
+        showToast(data);
+        createProductsView(1);
+    }).catch(err => {
+        closeDeleteDialog();
+        showToast(data);
+    });
+}
+// ----------- delete product ----------------
+
+// ====================== product end ==================================
+
+// ====================== order start ==================================
+
+function changeOrderType(el, dp, title, str, isSold) {
+    changeDpTitle(el, dp, title, str, false);
+    // createOrderView(isSold);
+}
+
+function previous() {
+    showToast('previous');
+}
+
+function next() {
+    showToast('next');
+}
+
+function goToPage(event, elem) {
+    var evt = window.event || event;
+    if (evt.keyCode == 13) {
+        showToast(`go to page ${elem.value}`);
+    }
 }
 
 function createOrderView() {
@@ -598,6 +642,9 @@ function createOrderView() {
 
 }
 
+// ====================== order end ==================================
+
+// ====================== collections start ==================================
 function createCollectionView() {
     var productsView = '';
     var list = getSearchList();
@@ -624,15 +671,4 @@ function createCollectionView() {
     }
 
 }
-
-function deleteProduct(index) {
-    if (deleteFromList(index)) {
-        showToast('Delete success');
-        createProductsView(1);
-    }
-}
-
-function changeOrderType(el, dp, title, str, isSold) {
-    changeDpTitle(el, dp, title, str, false);
-    // createOrderView(isSold);
-}
+// ====================== collections start ==================================

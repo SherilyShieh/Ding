@@ -4,7 +4,8 @@
     Include_once "./common.php";
 
     // get request
-    $storeid = $_GET["storeid"];
+    $body = file_get_contents('php://input');
+    $request = json_decode($body);
     // init connection
     Global $user;
     Global $password;
@@ -12,8 +13,8 @@
     Global $host;
     Global $port;
     $con = new mysqli($host,$user,$password,$db,$port);
-
-    $sql = "SELECT * FROM store WHERE id = $storeid";
+    // query database
+    $sql = "INSERT INTO feedback (`user_id`, cur_webpage, `name`, email, content, create_time) VALUES ('{$request->user_id}', '{$request->cur_webpage}', '{$request->name}','{$request->email}','{$request->content}',CURRENT_TIMESTAMP);";
     if (!$con) {
         die("connect error:" . mysqli_connect_error());
         $status1 = new Status(500, "connect error:" . mysqli_connect_error());
@@ -22,21 +23,17 @@
     } else{
         $result = mysqli_query($con, $sql);
         if (!$result) {
-            $resp = "Get store's information falied!";
+            $resp = "Submit feedback falied!";
             $status2 = new Status(500, "query error:" . mysqli_error($con));
-            $response2 = new Response($resp, $status2);
-        } else if (mysqli_num_rows($result) == 1) { 
-            $output = mysqli_fetch_row($result);
-            $store = new Store($output[0], $output[1], $output[2]);
-            $status2 = new Status(200, "Get store's infromation successfully!");
-            $response2 = new Response($store, $status2);
         } else {
-            $resp = "Multiple stores!";
-            $status2 = new Status(503, "Multiple stores!");
-            $response2 = new Response($resp, $status2);
+            $resp = "Submit feedback successfully!";
+            $status2 = new Status(200, "Submit feedback successfully!");
         }
+        $response2 = new Response($resp, $status2);
         JSON_STRING($response2);
 
     }
     mysqli_close($con);
+
+
 ?>

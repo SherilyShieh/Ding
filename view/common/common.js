@@ -17,6 +17,28 @@ var isShowRLoginPwd = false;
 var isShowRegisterPwd = false;
 var isShowRegisterConfirm = false;
 
+/**
+ * convert the str which contain '/' into array
+ * @param {*} str 
+ */
+function formatStr(str) {
+    if (str) {
+        let arr = str.split('\'');
+        let name = '';
+        arr.forEach((item, index) => {
+            if (index === 0) {
+                name = item;
+            } else {
+                name = `${name}''${item}`;
+            }
+
+        });
+        return name;
+    }
+    return '';
+
+}
+
 // common header
 var header = ['    <div class="header col-24">',
     '        <section class="col-xs-24 col-sm-20 col-md-16 col-lg-12 col-xl-12 head-left">',
@@ -379,12 +401,12 @@ function canvasMycart() {
 
 function openProduct(val) {
     // alert(val);
-    window.open(`../../view/product/product.html?pid=${val}`, '_self');
+    window.open(`${window.location.origin}/view/product/product.html?pid=${val}`, '_self');
 }
 
 function openStore(val) {
     // alert(val);
-    window.open(`../../view/mystore/mystore.html?sid=${val}`, '_self');
+    window.open(`${window.location.origin}/view/mystore/mystore.html?sid=${val}`, '_self');
 }
 
 function changeSelected(val) {
@@ -516,23 +538,23 @@ function openEmail() {
 
 // Common header actions
 function openAboutus() {
-    window.open('../../view/aboutus/aboutus.html', '_self');
+    window.open(`${window.location.origin}/view/aboutus/aboutus.html`, '_self');
     closeDropdown();
 }
 
 function backHome() {
-    window.open('../../view/home/Home.html', '_self');
+    window.open(`${window.location.origin}/view/home/Home.html`, '_self');
     closeDropdown();
 }
 
 function quickSearch(dep, type) {
-    window.open(`../../view/search/search.html?dep=${dep}&&type=${type}`, '_self');
+    window.open(`${window.location.origin}/view/search/search.html?dep=${dep}&&type=${type}`, '_self');
 }
 function search() {
     var key = getElments('common-search-bar').value;
     if (key) {
     // alert(key);
-        window.open(`../../view/search/search.html?keyword=${key}`, '_self');
+        window.open(`${window.location.origin}/view/search/search.html?keyword=${key}`, '_self');
     } else {
         showToast("please input keyword!")
     }
@@ -542,7 +564,7 @@ function search() {
 
 function openMyaccount(val) {
     // todo
-    window.open(`../../view/myaccount/myaccount.html?nav=${val}`, '_self');
+    window.open(`${window.location.origin}/view/myaccount/myaccount.html?nav=${val}`, '_self');
     closeDropdown();
 
 }
@@ -554,7 +576,7 @@ function logout() {
         clearCookie('LOGIN_USER', '', '/');
         showToast("Logout successfully!");
         reset();
-        window.open('http://localhost:8088/view/home/Home.html', '_self');
+        window.open(`${window.location.origin}/view/home/Home.html`, '_self');
     }).catch(err => {
         showToast(err);
     });
@@ -1051,7 +1073,6 @@ function initUser() {
     let jsonuser = getCookie('LOGIN_USER');
     if (jsonuser) {
         let user = JSON.parse(jsonuser);
-        console.log(user);
         isLogin = true;
         return user;
     }
@@ -1086,7 +1107,7 @@ function createFeedbackCenter() {
                     <span id="error-feedback-name" class="error-msg-user" style="margin-left: 100px;">Please enter your name!</span>
                     <section class="dialog-form-item">
                         <label>Email</label>
-                        <input type="text" name="color" style="width: 300px;" id="feedback-email" placeholder="Please enter your emial!" onblur="checkFeedback(this, 'error-feedbackemail', true)" oninput="cancelFeedbackError(this, 'error-feedbackemail')">
+                        <input type="text" name="color" style="width: 300px;" id="feedback-email" placeholder="Please enter your emial!" onblur="checkFeedback(this, 'error-feedback-email', true)" oninput="cancelFeedbackError(this, 'error-feedback-email')">
                     </section>
                     <span id="error-feedback-email" class="error-msg-user" style="margin-left: 100px;">Please enter your email!</span>
                     <section class="dialog-form-item">
@@ -1105,16 +1126,37 @@ function createFeedbackCenter() {
 
 }
 
+function restFeedbackForm() {
+    getElments('feedback-name').value = '';
+    getElments('feedback-email').value = '';
+    getElments('feedback-content').value = '';
+}
+
 function openorcloseFeedback(isOpen) {
     getElments('dialog-mask-feedback').style.display = isOpen ? 'block' : 'none';
     getElments('feedback-dialog').style.display = isOpen ? 'block' : 'none';
+    restFeedbackForm();
 }
 
 function sendFeedback() {
+    let user = initUser();
     if (checkFeedback(getElments('feedback-name'), 'error-feedback-name', false) 
     && checkFeedback(getElments('feedback-email'), 'error-feedback-email', true) 
     && checkFeedback(getElments('feedback-content'), 'error-feedback-content', false)) {
-        showToast('Send success!')
+        CreateFeedback({
+            user_id: user ? user.id : '',
+            cur_webpage: window.location.pathname,
+            name: getElments('feedback-name').value,
+            email: getElments('feedback-email').value,
+            content: formatStr(getElments('feedback-content').value)
+        }).then(data => {
+            openorcloseFeedback(false);
+            showToast(data);
+        }).catch(err => {
+            openorcloseFeedback(false);
+            showToast(err);
+        });
+        
     }
 
 }
@@ -1126,11 +1168,12 @@ function checkFeedback(el, error, isemail) {
         if (isemail) {
             showErrorInfo(error, 'Please enter your email!');
         }
-        showErrorInfo(error, null);
+        showErrorInfo(error, 'Please enter your infomation!');
         flag = false;
-    } else if (!isEmail(el.value.trim())){
+    } else if (isemail && !isEmail(el.value.trim())){
         showErrorInfo(error, 'Invalid emial!');
         flag = false;
+        
     }
     return flag;
 } 

@@ -109,3 +109,36 @@ function ModifyProduct(opt) {
         isFile: false
     });
 }
+
+function DeleteProduct(opt) {
+    return http({
+        method: 'POST',
+        url: '/view/interface/deleteproduct.php',
+        path: '',
+        body: opt,
+        header: '',
+        isFile: false
+    });
+}
+
+function CreateFeedback(opt) {
+    return http({
+        method: 'POST',
+        url: '/view/interface/createfeedback.php',
+        path: '',
+        body: opt,
+        header: '',
+        isFile: false
+    });
+}
+
+function GetStoreInfo(opt) {
+    return http({
+        method: 'GET',
+        url: '/view/interface/getstoreinfo.php',
+        path: '',
+        body: opt,
+        header: '',
+        isFile: false
+    });
+}
