@@ -39,6 +39,17 @@ function formatStr(str) {
 
 }
 
+function checkLoginStatus() {
+    let user = initUser();
+    if (user) {
+        return user;
+    }
+    showToast("Please Login");
+    window.open(`${window.location.origin}/view/home/Home.html`, '_self');
+    return null;
+
+}
+
 // common header
 var header = ['    <div class="header col-24">',
     '        <section class="col-xs-24 col-sm-20 col-md-16 col-lg-12 col-xl-12 head-left">',
@@ -363,7 +374,7 @@ function crearCartList() {
                 ${item.products.map((pro, pindex) => {
                     return `<section class="cart-product-item">
                     <img src="../../static/unselected.png" id="cart-product-selection-${pro.id}" class="cart-selection-btn" onclick="changeItemSelected(${index}, ${pindex})">
-                    <img src="${pro.icon}" class="cart-product-icon" onclick="openProduct(${pro.pid})">
+                    <img src="${pro.icon}" class="cart-product-icon" onclick="openProduct(${item.sid},${pro.pid})">
                     <section class="cart-product-info">
                         <span class="cart-product-name">${pro.title}</span>
                         <span>Size: ${pro.size}</span>
@@ -399,9 +410,9 @@ function canvasMycart() {
     }
 }
 
-function openProduct(val) {
+function openProduct(val1, val2) {
     // alert(val);
-    window.open(`${window.location.origin}/view/product/product.html?pid=${val}`, '_self');
+    window.open(`${window.location.origin}/view/product/product.html?sid=${val1}&pid=${val2}`, '_self');
 }
 
 function openStore(val) {
@@ -712,7 +723,7 @@ function closeLoginDialog() {
     restLoginDialog();
 }
 function loginU() {
-    if (CheckUserName() && (isShowRLoginPwd ? checkPassword(getElments('password-login-hide')) : checkPassword(getElments('password-login-hide')))) {
+    if (CheckUserName() && (isShowRLoginPwd ? checkPassword(getElments('password-login-show')) : checkPassword(getElments('password-login-hide')))) {
         var loginUser = {
             username: '',
             password: ''
@@ -728,14 +739,6 @@ function loginU() {
             showErrorForLogin('Incorrect user account or password!');
             console.log(err);
         });
-        // var rep = loginWithUser(loginUser);
-        // if (rep.success){//login success
-        //     closeLoginDialog();
-        // } else if (rep.errorCode == 1) {// incorrect pwd or account
-        //     showErrorForLogin('Incorrect user account or password!');
-        // } else if (rep.errorCode == 2) {// no user
-        //     showErrorForLogin('No user, please register!');
-        // }
     }
 
 }

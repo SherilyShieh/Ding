@@ -142,3 +142,14 @@ function GetStoreInfo(opt) {
         isFile: false
     });
 }
+
+function GetProductInfo(opt) {
+    return http({
+        method: 'GET',
+        url: '/view/interface/getproductinfo.php',
+        path: '',
+        body: opt,
+        header: '',
+        isFile: false
+    });
+}

@@ -11,12 +11,7 @@ GetRequest();
  * get query info refresh page
  */
 function GetRequest() {
-    let user = initUser();
-    if (!user) {
-        showToast("Please login!")
-        window.open(`${window.location.origin}/view/home/Home.html`, '_self');
-        return;
-    }
+    checkLoginStatus();
     const url = location.search;
     let theRequest = new Object();
     if (url.indexOf("?") != -1) {
@@ -134,20 +129,10 @@ function strCovertToList(val) {
     if (val) {
         return val.split('/');
     }
-    return [];
-
-}
-
-function checkLoginStatus() {
-    let user = initUser();
-    if (user) {
-        return user;
-    }
-    showToast("Please Login");
-    window.open(`${window.location.origin}/view/home/Home.html`, '_self');
     return null;
 
 }
+
 // ====================== common tools in account page end================================
 
 
@@ -532,7 +517,7 @@ function createProductsView(pageIndex) {
                 let img = `${window.location.origin}${item.product_icon}`;
                 productsView += `
                 <section class="my-product-item">
-                <img src="${img}" class="product-img" onclick="openProduct(${item.id})">
+                <img src="${img}" class="product-img" onclick="openProduct(${item.store_id},${item.id})">
                 <section class="item-detail">
                     <span class="item-name">${item.product_name}</span>
                     <span class="item-price">NZ$${item.product_price}</span>
@@ -622,7 +607,7 @@ function createOrderView() {
         list.forEach((item, index) => {
                     productsView += `
             <section class="my-product-item">
-            <img src="${item.icon}" class="product-img" onclick="openProduct(${item.id})">
+            <img src="${item.icon}" class="product-img" onclick="openProduct(${item.store_id},${item.id})">
             <section class="item-detail">
                 <span class="item-name">${item.title}</span>
                 <span class="item-price">NZ$${item.price}</span>
@@ -654,7 +639,7 @@ function createCollectionView() {
         list.forEach((item, index) => {
                     productsView += `
             <section class="my-product-item">
-            <img src="${item.icon}" class="product-img" onclick="openProduct(${item.id})">
+            <img src="${item.icon}" class="product-img" onclick="openProduct(${item.store_id},${item.id})">
             <section class="item-detail">
                 <span class="item-name">${item.title}</span>
                 <span class="item-price">NZ$${item.price}</span>
