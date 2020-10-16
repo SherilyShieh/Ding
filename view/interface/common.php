@@ -1,4 +1,25 @@
 <?php
+    class Banner {
+        var $img;
+        var $link;
+
+        function __construct($par1, $par2) {
+            $this->img = $par1;
+            $this->link = $par2;
+        }
+    }
+    class Category {
+        var $department_name;
+        var $icon;
+        var $types;
+        var $produts;
+        function __construct($par1, $par2, $par3, $par4) {
+            $this->department_name = $par1;
+            $this->icon = $par2;
+            $this->types = $par3;
+            $this->produts = $par4;
+        }
+    }
     class Store {
         var $id;
         var $owner_id;

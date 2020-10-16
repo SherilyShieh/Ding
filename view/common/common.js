@@ -1185,28 +1185,37 @@ function cancelFeedbackError(el, error) {
     el.style.border = defaultBorder;
     getElments(error).style.display = 'none';
 }
-var banners;
-function createBannerView() {
-    banners = getBanners();
-    var bannerview = `
-    <section class="banner-contanier">
-        ${
-            banners.map((item, index) => {
-               return `<img src="${item.bannerimg}" id="product-banner-${index}" style="display: ${index == 0 ? 'block' : 'none'}">` 
-            }).join('')
-        }
-    </section>
-    <section class="banner-indicator">
-        ${
-            banners.map((item, index) => {
-                return `<img src="${index == 0 ? selectedIndicator : unselectedIdicator}" id="product-indicator-${index}" onclick="showBanner(${index})">` 
-             }).join('')
-        }
-    </section>
-    `;
-    addWidegt('banner', bannerview).addP();
+function formatLink(link) {
+    return `'${window.location.origin}${link}'`;
 }
+function createBannerView() {
+    GetBanners().then(data => {
+        var bannerview = `
+        <section class="banner-contanier">
+            ${
+                data.map((item, index) => {
+                    let link = formatLink(item.link);
+                   return `<img onclick="openBanner(${link})" src="${window.location.origin}${item.img}" id="product-banner-${index}" style="display: ${index == 0 ? 'block' : 'none'}">` 
+                }).join('')
+            }
+        </section>
+        <section class="banner-indicator">
+            ${
+                data.map((item, index) => {
+                    return `<img src="${index == 0 ? selectedIndicator : unselectedIdicator}" id="product-indicator-${index}" onclick="showBanner(${index})">` 
+                 }).join('')
+            }
+        </section>
+        `;
+        addWidegt('banner', bannerview).addP();
+    }).catch(err => {
+        showToast(err);
+    });
 
+}
+function openBanner(link) {
+    window.open(link, '_self');
+}
 function showBanner(index) {
     for (var i = 0; i < 6; i++) {
         getElments(`product-banner-${i}`).style.display = (i == index) ? 'block' : 'none';

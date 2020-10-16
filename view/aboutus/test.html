@@ -13,11 +13,18 @@
         <input type="submit" value="registration"></br>
 
     </form>
+    <span>----------------------------------------create department---------------------------------------</span>
     <form>
         Departname: <input id="name" type="text" /> Icon: <input id="file" type="file" accept="image/*" />
     </form>
     <button id="upload" type="button" onclick="upload()">submit</button>
     <img id="result" alt="">
+    <span>----------------------------------------create banner---------------------------------------</span>
+    <form>
+        Banner: <input id="link" type="text" placeholder="link" /> Icon: <input id="file2" type="file" accept="image/*" />
+    </form>
+    <button id="upload2" type="button" onclick="upload2()">submit</button>
+    <img id="result2" alt="">
     <script type="text/javascript">
         function upload() {
             console.log("upload.....")
@@ -40,7 +47,31 @@
         }
 
         function setImg(pic) {
-            document.getElementById("result").src = pic;
+            document.getElementById("result").src = `${window.location.origin}${pic}`;
+        }
+
+        function upload2() {
+            console.log("upload.....")
+            var formdata = new FormData();
+            formdata.append('pic', $('#file2')[0].files[0]);
+            UploadFile(formdata).then(data => {
+                console.log(data);
+                setImg2(data)
+                var request = {
+                    link: document.getElementById("link").value,
+                    img: data
+                }
+                CreateBanner(request);
+
+            }).then(data => {
+                console.log(data);
+            }).catch(err => {
+                console.log(err);
+            });
+        }
+
+        function setImg2(pic) {
+            document.getElementById("result2").src = `${window.location.origin}${pic}`;
         }
     </script>
 

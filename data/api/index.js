@@ -153,3 +153,36 @@ function GetProductInfo(opt) {
         isFile: false
     });
 }
+
+function GetCategories() {
+    return http({
+        method: 'GET',
+        url: '/view/interface/gethomecategory.php',
+        path: '',
+        body: '',
+        header: '',
+        isFile: false
+    });
+}
+
+function CreateBanner(opt) {
+    return http({
+        method: 'POST',
+        url: '/view/interface/createbanner.php',
+        path: '',
+        body: opt,
+        header: '',
+        isFile: false
+    });
+}
+
+function GetBanners() {
+    return http({
+        method: 'GET',
+        url: '/view/interface/getbanners.php',
+        path: '',
+        body: '',
+        header: '',
+        isFile: false
+    });
+}
