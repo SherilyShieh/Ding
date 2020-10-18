@@ -186,3 +186,25 @@ function GetBanners() {
         isFile: false
     });
 }
+
+function SearchInStore(opt) {
+    return http({
+        method: 'GET',
+        url: '/view/interface/searchinstore.php',
+        path: '',
+        body: opt,
+        header: '',
+        isFile: false
+    });
+}
+
+function Search(opt) {
+    return http({
+        method: 'GET',
+        url: '/view/interface/search.php',
+        path: '',
+        body: opt,
+        header: '',
+        isFile: false
+    });
+}

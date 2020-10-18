@@ -93,22 +93,7 @@ function changeStyle(val, isSelected) {
         return;
     }
 }
-/**
- * delete the key whoes value is empty in the object
- * @param {*} obj 
- */
-function formatObject(obj) {
-    if (obj) {
-        for (var key in obj) {
-            if (obj[key] === '') {
-                delete obj[key]
-            }
-        }
-        return obj;
-    }
-    return null;
 
-}
 
 
 function openAccountDp(isOpen, dp) {

@@ -1,3 +1,4 @@
+createBannerView();
 createHomeFilters();
 
 function createHomeFilters() {
@@ -11,7 +12,7 @@ function createHomeFilters() {
                         <section class="type-title"><img src="${window.location.origin}${item.icon}"><span>${item.department_name}'s Fashion</span></section>
                         <section class="types">
                             ${item.types.map(type => {
-                                return `<span class="type-item" onclick="quickSearch('${item.department}', '${type}')">${type}</span>`
+                                return `<span class="type-item" onclick="quickSearch('${item.department_name}', '${type}')">${type}</span>`
                             }).join('')}
                         </section>
                     </section>

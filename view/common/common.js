@@ -38,6 +38,35 @@ function formatStr(str) {
     return '';
 
 }
+/**
+ * delete the key whoes value is empty in the object
+ * @param {*} obj 
+ */
+function formatObject(obj) {
+    if (obj) {
+        for (var key in obj) {
+            if (obj[key] === '' || obj[key] === undefined || obj[key] === null) {
+                delete obj[key]
+            }
+        }
+        return obj;
+    }
+    return null;
+
+}
+
+// function formatObjectWithTarget(obj, target) {
+//     if (obj) {
+//         for (var key in obj) {
+//             if (key === target) {
+//                 delete obj[key];
+//             }
+//         }
+//         return obj;
+//     }
+//     return null;
+
+// }
 
 function checkLoginStatus() {
     let user = initUser();
@@ -47,6 +76,31 @@ function checkLoginStatus() {
     showToast("Please Login");
     window.open(`${window.location.origin}/view/home/Home.html`, '_self');
     return null;
+
+}
+
+function GetCurrentRequest() {
+    checkLoginStatus();
+    const url = location.search;
+    let theRequest = new Object();
+    if (url.indexOf("?") != -1) {
+        let str = url.substr(1);
+        strs = str.split("&");
+        for (let i = 0; i < strs.length; i++) {
+            theRequest[strs[i].split("=")[0]] = unescape(strs[i].split("=")[1]);
+        }
+    }
+    console.log(theRequest);
+
+    return theRequest;
+}
+
+function initViewWithQuery() {
+    if (window.location.pathname == '/view/search/search.html') {
+        let query = GetCurrentRequest();
+        getElments('header-filter').innerText = query.dep ? query.dep : 'All';
+        getElments('common-search-bar').value = query.keyword ? query.keyword : '';
+    }
 
 }
 
@@ -65,10 +119,10 @@ var header = ['    <div class="header col-24">',
     '                    </section>',
     '                    <section class="dropdown-content" id="filter-dropdown">',
     '                        <p id="header-dd-0" onclick="selectedFilter(0)">All</p>',
-    '                        <p id="header-dd-1" onclick="selectedFilter(1)">Women\'s Fashion</p>',
-    '                        <p id="header-dd-2" onclick="selectedFilter(2)">Men\'s Fashion</p>',
-    '                        <p id="header-dd-3" onclick="selectedFilter(3)">Girls\' Fashion</p>',
-    '                        <p id="header-dd-4" onclick="selectedFilter(4)">Boys\' Fashion</p>',
+    '                        <p id="header-dd-1" onclick="selectedFilter(1)">Women</p>',
+    '                        <p id="header-dd-2" onclick="selectedFilter(2)">Men</p>',
+    '                        <p id="header-dd-3" onclick="selectedFilter(3)">Girls</p>',
+    '                        <p id="header-dd-4" onclick="selectedFilter(4)">Boys</p>',
     '                    </section>',
     '                </section>',
     '                <!-- todo: click trigge the dropdown -->',
@@ -559,13 +613,17 @@ function backHome() {
 }
 
 function quickSearch(dep, type) {
-    window.open(`${window.location.origin}/view/search/search.html?dep=${dep}&&type=${type}`, '_self');
+    window.open(`${window.location.origin}/view/search/search.html?dep=${dep}&type=${type}&page=1&tod=DESC&pod=ASC`, '_self');
 }
 function search() {
-    var key = getElments('common-search-bar').value;
+    let key = getElments('common-search-bar').value;
+    let dep = getElments('header-filter').innerText;
+    let depquery = dep === 'All' ? '' : `dep=${dep}&`
     if (key) {
     // alert(key);
-        window.open(`${window.location.origin}/view/search/search.html?keyword=${key}`, '_self');
+        
+        window.open(`${window.location.origin}/view/search/search.html?${depquery}keyword=${key}&page=1&tod=DESC&pod=ASC`, '_self');
+        // window.open(`${window.location.origin}/view/search/search.html?keyword=${key}`, '_self');
     } else {
         showToast("please input keyword!")
     }
@@ -622,6 +680,7 @@ function selectedFilter(val) {
     getElments('filter-open-arrow').src = downMenClose;
 
 }
+
 
 function initFilterDorp() {
     for (var i = 0; i < 5; i++) {
@@ -1092,7 +1151,10 @@ function reset() {
         getElments('account-name-dp').innerText = 'My Account';
     }
 }
+// =========================== header ===================================
 
+
+// =========================== feedback center ===================================
 function createFeedbackCenter() {
     feedbackcenter = `<div class="feedback-center" onclick="openorcloseFeedback(true)">
         <img src="../../static/feed_back.png" class="feedback-center-icon">
@@ -1185,6 +1247,9 @@ function cancelFeedbackError(el, error) {
     el.style.border = defaultBorder;
     getElments(error).style.display = 'none';
 }
+// =========================== feedback center ===================================
+
+// =========================== banners ===================================
 function formatLink(link) {
     return `'${window.location.origin}${link}'`;
 }
@@ -1226,6 +1291,12 @@ function showBanner(index) {
     }
 }
 
+function initBanner() {
+    if (window.location.origin === '/view/home/Home.html') {
+        createBannerView();
+    }
+}
+// =========================== banners ===================================
 window.onload = function() {
     addCommonHeader();
     addCommonFooter();
@@ -1234,5 +1305,6 @@ window.onload = function() {
     canvasMycart();
     refreshTotal(getCartTotal());
     createFeedbackCenter();
-    createBannerView();
+    initViewWithQuery();
+    // initBanner();
 };
