@@ -1,4 +1,3 @@
-// import '../../data/mockdata.js';
 document.write("<script type='text/javascript' src='../../data/mockdata.js'></script>");
 document.write("<script src='../../data/jquery-3.5.1.min.js'></script>")
 document.write("<script type='text/javascript' src='../../data/api/index.js'></script>");

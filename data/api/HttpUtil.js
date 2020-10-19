@@ -1,15 +1,15 @@
 document.write("<script type='text/javascript' src='../../data/api/mypromise.js'></script>")
 document.write("<script src='../../data/jquery-3.5.1.min.js'></script>")
-    // var data_templte = {
+    // var data_model = {
     //     data: {
 
 //     },
 //     status: {
-//         code: 200, // 404, 503, 1002
+//         code: 200, // 404, 503, 500
 //         msg: ""
 //     }
 // }
-const baseUrl = "http://localhost:8088/";
+const baseUrl = "http://localhost:8088/"; // if you wanna run on your compute, please change this to your database address 
 const ajax = (method, path, body, header, isFile) => {
     return new MyPromise((resolve, reject) => {
         data = (method === "POST" && !isFile) ? JSON.stringify(body) : body;
