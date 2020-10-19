@@ -231,12 +231,31 @@ function userActions(isBuy) {
     // add to cart list
     if (isBuy) {
         // create order
-        showToast('Purchase success!');
+        
+        GetStoreInfo({ storeid: currentPro.store_id}).then(data=>{
+            let orders = [];
+            currentPro['store_name'] = data.store_name;
+            orders.push(currentPro);
+            CreateOrders({orders}).then(data=>{
+                console.log(data);
+                showToast('Purchase success!');
+                closeopenDialog(false);
+            }).catch(err=>{
+                console.log(err);
+                showToast(err);
+                closeopenDialog(false);
+            })
+        }).catch(err=>{
+            showToast(err);
+            closeopenDialog(false);
+        });
+
     } else {
         // add to cart
         AddToCart(currentPro).then(data => {
             showToast(data);
             closeopenDialog(false);
+            createCartList();
         }).catch(err => {
             showToast(err);
             closeopenDialog(false);

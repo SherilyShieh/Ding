@@ -252,3 +252,14 @@ function ModifyWish(opt) {
         isFile: false
     });
 }
+
+function CreateOrders(opt) {
+    return http({
+        method: 'POST',
+        url: '/view/interface/createorders.php',
+        path: '',
+        body: opt,
+        header: '',
+        isFile: false
+    });
+}

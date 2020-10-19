@@ -20,6 +20,7 @@ var myproduct = {
     isCollected: false,
 }
 var productinfo;
+var current_store;
 
 function initMyproduct(data) {
     myproduct.store_id = data.store_id;
@@ -46,16 +47,15 @@ function GetRequest() {
 
     let sid = Number(theRequest.sid);
     let pid = Number(theRequest.pid);
-    let storeInfo;
     if (sid && pid) {
         GetStoreInfo({ storeid: sid }).then(data => {
             console.log(data);
-            storeInfo = data;
+            current_store = data;
             GetProductInfo({ productid: pid }).then(data => {
                 productinfo = data;
                 initMyproduct(data);
                 console.log(data);
-                createProductInfo(storeInfo, data)
+                createProductInfo(current_store, data)
             }).catch(err => {
                 console.log(err);
                 showToast(err);
@@ -182,11 +182,21 @@ function detailAction(isBuy) {
     // add to cart list
     if (isBuy) {
         // todo
-        showToast('Purchase success!');
+        let orders = [];
+        myproduct['store_name'] = current_store.store_name;
+        orders.push(myproduct);
+        CreateOrders({orders}).then(data=>{
+            console.log(data);
+            showToast('Purchase success!');
+        }).catch(err=>{
+            console.log(err);
+            showToast(err);
+        })
     } else {
         // todo
         AddToCart(myproduct).then(data => {
             showToast(data);
+            createCartList();
         }).catch(err => {
             showToast(err);
         })

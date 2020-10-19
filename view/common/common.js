@@ -149,7 +149,7 @@ var header = ['    <div class="header col-24">',
     '            </section>',
     '        </section>',
     '    </div>',
-    '    <section class="cart-red-num-div" onclick="openCart()">',
+    '    <section class="cart-red-num-div" id="cart-red-num-sec" onclick="openCart()">',
     '        <span id="cart-red-num">99+</span>',
     '    </section>',
     '    <section class="dialog-mask" id="dialog-mask">',
@@ -158,7 +158,7 @@ var header = ['    <div class="header col-24">',
     '            <section class="my-cart">',
     '                <section class="my-cart-header">',
     '                    <span>My Cart</span>',
-    '                    <span id="cart-count">Total: 10</span>',
+    '                    <span id="cart-count">Total: 0</span>',
     '                </section>',
     '                <section id="cart-list">',
     '                </section>',
@@ -175,7 +175,7 @@ var header = ['    <div class="header col-24">',
     '                    <section class="my-cart-buy">',
     '                        <section>',
     '                            <span>Total:</span>',
-    '                            <span id="total-money">NZ$300</span>',
+    '                            <span id="total-money">NZ$0.00</span>',
     '                        </section>',
     '                        <button type="button" id="cart-buy" onclick="purchase()">',
     '                        BUY',
@@ -372,21 +372,47 @@ function addCommonFooter() {
 
 // Cart-drawer
 function openCart() {
-    getElments('dialog-mask').style.display = 'block';
+    if (initUser()) {
+        getElments('dialog-mask').style.display = 'block';
+    } else {
+        showToast('Please Login first!');
+    }
+
 }
 
 function closeCart() {
     getElments('dialog-mask').style.display = 'none';
 }
 
-function refreshTotal(val) {
+function refreshTotal() {
+    let total_count = 0;
+    let money = 0;
+    if (selectedwish.length) {
+        selectedwish.forEach(element => {
+            total_count += Number(element.product_count);
+            money += Number(element.product_count) * Number(element.product_price);
+        });
+        getElments('cart-count').innerText = 'Total: ' + total_count;
+        getElments('total-money').innerText = `NZ$${money}`;
+    } else {
+        getElments('cart-count').innerText = 'Total: 0';
+        getElments('total-money').innerText = 'NZ$0.00';
+    }
+
+}
+
+function refreshRedNum(val) {
+    if (val > 0) {
+        getElments('cart-red-num-sec').style.display = 'flex';
+    } else {
+        getElments('cart-red-num-sec').style.display = 'none';
+    }
     var num = val + '';
     if (val > 99) {
         num = '99+';
     }
     getElments('cart-red-num').innerText = num;
-    getElments('cart-count').innerText = 'Total: ' + val;
-    getElments('total-money').innerText = 'NZ$0.00';
+
 }
 
 function addCartItemWidget() {
@@ -397,16 +423,18 @@ function addCartItemWidget() {
 
 function createCartList() {
     // var cartList = getCartList();
-
-    GetWishList({ user_id: initUser().id }).then(data => {
-                var mycart = '';
-                totalwish = data.count;
-                getElments('cart-red-num').innerText = data.count + '';
-                if (data.list.length) {
-                    curwishlist = data.list;
-                    data.list.forEach((item, index) => {
-                                item['isSelected'] = false;
-                                mycart += `<div class="cart-item">
+    selectedwish = [];
+    let user = initUser();
+    if (user) {
+        GetWishList({ user_id: user.id }).then(data => {
+                    var mycart = '';
+                    totalwish = data.count;
+                    refreshRedNum(data.count);
+                    if (data.list && data.list.length) {
+                        curwishlist = data.list;
+                        data.list.forEach((item, index) => {
+                                    item['isSelected'] = false;
+                                    mycart += `<div class="cart-item">
                 <section class="cart-shop">
                     <img src="../../static/unselected.png" id="cart-shop-selection-${item.store_id}" class="cart-selection-btn" onclick="changeSelected(${index})">
                     <span id="cart-shop-name" onclick="openStore(${item.store_id})">${item.store_name}</span>
@@ -437,9 +465,12 @@ function createCartList() {
             });
         }
         canvasMycart(mycart);
-    }).catch(err=>{
-        showToast(err);
-    });
+        }).catch(err=>{
+            showToast(err);
+        });
+    } else {
+        refreshRedNum(0);
+    }
     
 
 }
@@ -487,6 +518,7 @@ function changeSelected(val) {
     });
     console.log('curwishlist', curwishlist);
     refreshselstedList(shop);
+    
 }
 function findposition(e) {
     for (var i = 0; i < selectedwish.length; i++) {
@@ -498,7 +530,7 @@ function findposition(e) {
     return -1;
 }
 function refreshselstedList(shop) {
-    if (selectedwish.length) {
+    if (selectedwish && selectedwish.length) {
         shop.products.forEach((e) => {
             var fIndex = findposition(e);
             if (fIndex >= 0 && !e.isSelected) {
@@ -514,11 +546,11 @@ function refreshselstedList(shop) {
             }
         });
     }
-    console.log('selectedwish:', selectedwish);
+    refreshTotal();
 }
 
 function refreshSelectedCount(product, isDelete) {
-    if (selectedwish.length) {
+    if (selectedwish && selectedwish.length) {
         if (!isDelete) {
             selectedwish.forEach(e => {
                 if (e.id === product.id) {
@@ -532,6 +564,7 @@ function refreshSelectedCount(product, isDelete) {
             }
         }
     }
+    refreshTotal();
     
 }
 
@@ -587,7 +620,12 @@ function deleteCount(val1, val2) {
         refreshSelectedCount(product, true);
         let ids = [];
         ids.push(product.id);
-        deletewishs(ids);
+        Deletewishs({ids}).then(data => {
+            console.log(data);
+            createCartList();
+        }).catch(err=>{
+            showToast(err);
+        });
         
  
     }
@@ -612,23 +650,29 @@ function deletewishs(ids) {
         console.log(data);
         createCartList();
     }).catch (err=>{
+        console.log(err);
         showToast(err);
     });
 }
 
 
 function purchase() {
-    if (selectedwish.length) {
+    if (selectedwish && selectedwish.length) {
         // notify sucess
-        
-        closeCart();
-        showToast('Purchase success!');
-        if (deleteSelectedList()) {
-            canvasMycart();
-        }
+        CreateOrders({orders: selectedwish}).then(data=>{
+            console.log(data);
+            closeCart();
+            showToast('Purchase success!');
+            deleteSelected();
+            refreshTotal();
+        }).catch(err=>{
+            console.log(err);
+            showToast(err);
+        })
+
     } else {
         // todo s
-        showToast('Please select some products~!');
+        showToast('No items are currently selected!');
     }
 }
 
@@ -642,7 +686,14 @@ function deleteSelected() {
     selectedwish.forEach(e => {
         ids.push(e.id);
     });
-    deletewishs(ids);
+    DeleteWishs({ids}).then(data=>{
+        showToast(data);
+        createCartList();
+        selectedwish = [];
+        refreshTotal();
+    }).catch(err=>{
+        showToast(err);
+    });
 
 }
 
@@ -1365,7 +1416,6 @@ window.onload = function() {
     reset();
     initFilterDorp();
     createCartList();
-    refreshTotal(getCartTotal());
     createFeedbackCenter();
     initViewWithQuery();
 };
