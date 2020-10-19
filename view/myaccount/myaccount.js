@@ -46,7 +46,7 @@ function changeNav(val) {
     } else if (val == 1) {
         createProductsView(1);
     } else if (val == 2) {
-        createOrderView();
+        createOrderView(1);
     } else if (val == 3) {
         createCollectionView();
     }
@@ -100,13 +100,20 @@ function openAccountDp(isOpen, dp) {
     getElments(dp).style.display = isOpen ? 'block' : 'none';
 }
 
-function changeDpTitle(el, dp, title, str, isProduct) {
+function changeDpTitle(el, dp, title, str, code) {
     getElments(title).innerText = str + el.innerText;
     openAccountDp(false, dp);
-    if (isProduct) {
-        createProductsView(1);
-    } else {
-        createOrderView();
+    switch (code) {
+        case 1:
+            createProductsView(1);
+            break;
+        case 2:
+            createOrderView(1);
+            break;
+        case 3:
+            createCollectionView();
+            break;
+
     }
 }
 
@@ -215,8 +222,7 @@ function closeDialog() {
 
 }
 
-function previouspRoduct() {
-    showToast('previous');
+function previousProduct() {
 
     if (productCount == 0) {
         showToast("Current list is empty!")
@@ -478,8 +484,6 @@ var currentIndex = 0;
 var totalProductPage = 0;
 
 function createProductsView(pageIndex) {
-    console.log(getElments('account-price-sort-text').innerText);
-    console.log(getElments('account-time-sort-text').innerText);
     let priceorder = getElments('account-price-sort-text').innerText === "Price: Low to High" ? 'ASC' : 'DESC';
     let timeorder = getElments('account-time-sort-text').innerText === "Time: Old to Latest" ? 'ASC' : 'DESC';
     var productsView = '';
@@ -560,55 +564,112 @@ function Confirm() {
 // ====================== product end ==================================
 
 // ====================== order start ==================================
+var total_order_count = 0;
+var total_order_page = 0;
+var current_order_page = 1;
 
-function changeOrderType(el, dp, title, str, isSold) {
-    changeDpTitle(el, dp, title, str, false);
+function changeOrderType(el, dp, title, str) {
+    current_order_page = 0;
+    total_order_count = 0;
+    total_order_page = 0;
+    changeDpTitle(el, dp, title, str, 2);
+
     // createOrderView(isSold);
 }
 
-function previous() {
-    showToast('previous');
+function updateOrderPager(index) {
+    $('#order-pager').text(`${index}/${total_order_page}`);
 }
 
-function next() {
-    showToast('next');
+function previousOrder() {
+
+    if (total_order_count == 0) {
+        showToast("Current list is empty!")
+        return;
+    } else if (current_order_page <= 1) {
+        showToast("Current page is the first page!")
+        return;
+    } else {
+        current_order_page--;
+        createOrderView(current_order_page);
+
+    }
 }
 
-function goToPage(event, elem) {
+function nextOrder() {
+    if (current_order_page < total_order_page) {
+        current_order_page++;
+        createOrderView(current_order_page);
+    } else {
+        showToast('This is the last page');
+    }
+}
+
+function goToOrderPage(event, elem) {
     var evt = window.event || event;
     if (evt.keyCode == 13) {
-        showToast(`go to page ${elem.value}`);
+        let index = elem.value;
+        if (index && index <= total_order_page) {
+            createOrderView(index);
+        } else {
+            showToast('Please enter a valid number!');
+        }
     }
 }
 
-function createOrderView() {
+function createOrderView(page) {
+    let user = checkLoginStatus();
     var productsView = '';
-    var list = getSearchList();
+    let priceorder = getElments('order-price-sort-text').innerText === "Price: Low to High" ? 'ASC' : 'DESC';
+    let timeorder = getElments('order-time-sort-text').innerText === "Time: Old to Latest" ? 'ASC' : 'DESC';
     let isSold = getElments('order-type-title').innerText === 'Sold';
     console.log('isSold', isSold);
-    if (list.length) {
-        getElments('my-order-list').style.display = 'flex';
-        getElments('my-order-list-empty').style.display = 'none';
-        list.forEach((item, index) => {
-                    productsView += `
-            <section class="my-product-item">
-            <img src="${item.icon}" class="product-img" onclick="openProduct(${item.store_id},${item.id})">
-            <section class="item-detail">
-                <span class="item-name">${item.title}</span>
-                <span class="item-price">NZ$${item.price}</span>
-                <span class="item-size">Size: ${item.orderColor}</span>
-                <span class="item-color"> Color: ${item.orderSize}</span>
-                <span class="item-color"> Count: ${item.dealCount}</span>
-                <span class="item-color"> Deal Time: ${item.DealTime}</span>
-                ${isSold ? `<span class="item-color"> Buyer: ${item.buyer}</span>` : `<span class="item-color"> Shop: ${item.shopName}</span>`}
-            </section>
-            </section>`;
-        });
-        addWidegt('my-order-list', productsView).addP();
-    } else {
-        getElments('my-order-list').style.display = 'none';
-        getElments('my-order-list-empty').style.display = 'flex';
+    current_order_page = page;
+    var request = {
+        priceorder,
+        timeorder,
+        page
     }
+    if (isSold) {
+        request['salerid'] = user.id;
+    } else {
+        request['buyerid'] = user.id;
+    }
+    GetOrders(request).then(data => {
+                total_order_count = Number(data.count);
+                total_order_page = Math.ceil(total_order_count / 10);
+                updateOrderPager(current_order_page);
+                if (data.list && data.list.length) {
+                    getElments('my-order-list').style.display = 'flex';
+                    getElments('my-order-list-empty').style.display = 'none';
+                    data.list.forEach((item, index) => {
+                                productsView += `
+                <section class="my-product-item">
+                <img src="${window.location.origin}${item.product_icon}" class="product-img" onclick="openProduct(${item.store_id},${item.product_id})">
+                <section class="item-detail">
+                    <span class="item-name">${item.product_name}</span>
+                    <span class="item-price">NZ$${item.product_price}</span>
+                    <span class="item-size">Size: ${item.product_size}</span>
+                    <span class="item-color"> Color: ${item.product_color}</span>
+                    <span class="item-color"> Count: ${item.product_count}</span>
+                    <span class="item-color"> Deal Time: ${item.create_time}</span>
+                    ${isSold ? `<span class="item-color"> Buyer: ${item.buyer_name}</span>` : `<span class="item-color"> Shop: ${item.store_name}</span>`}
+                </section>
+                </section>`;
+            });
+            addWidegt('my-order-list', productsView).addP();
+        } else {
+            total_order_count = data.count;
+            totalProductPage = Math.ceil(productCount / 10);
+            updateOrderPager(current_order_page);
+            getElments('my-order-list').style.display = 'none';
+            getElments('my-order-list-empty').style.display = 'flex';
+        }
+
+    }).catch(err => {
+        showToast(err);
+    });
+
 
 }
 

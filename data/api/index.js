@@ -263,3 +263,14 @@ function CreateOrders(opt) {
         isFile: false
     });
 }
+
+function GetOrders(opt) {
+    return http({
+        method: 'GET',
+        url: '/view/interface/getorders.php',
+        path: '',
+        body: opt,
+        header: '',
+        isFile: false
+    });
+}

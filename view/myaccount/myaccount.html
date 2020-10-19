@@ -76,8 +76,8 @@
                                     <img src="../../static/down.png">
                                 </section>
                                 <section class="dropdown-content" id="account-price-sort">
-                                    <p onclick="changeDpTitle(this, 'account-price-sort', 'account-price-sort-text', 'Price: ', true)">Low to High</p>
-                                    <p onclick="changeDpTitle(this, 'account-price-sort', 'account-price-sort-text', 'Price: ', true)">High to Low</p>
+                                    <p onclick="changeDpTitle(this, 'account-price-sort', 'account-price-sort-text', 'Price: ', 1)">Low to High</p>
+                                    <p onclick="changeDpTitle(this, 'account-price-sort', 'account-price-sort-text', 'Price: ', 1)">High to Low</p>
                                 </section>
                             </section>
                         </section>
@@ -88,13 +88,13 @@
                                     <img src="../../static/down.png">
                                 </section>
                                 <section class="dropdown-content" id="account-time-sort">
-                                    <p onclick="changeDpTitle(this, 'account-time-sort', 'account-time-sort-text', 'Time: ', true)">Latest to Old</p>
-                                    <p onclick="changeDpTitle(this, 'account-time-sort', 'account-time-sort-text', 'Time: ', true)">Old to Latest</p>
+                                    <p onclick="changeDpTitle(this, 'account-time-sort', 'account-time-sort-text', 'Time: ', 1)">Latest to Old</p>
+                                    <p onclick="changeDpTitle(this, 'account-time-sort', 'account-time-sort-text', 'Time: ', 1)">Old to Latest</p>
                                 </section>
                             </section>
                         </section>
                         <section class="search-pagers">
-                            <img src="../../static/right.png" onclick="previouspRoduct()">
+                            <img src="../../static/right.png" onclick="previousProduct()">
                             <span id="product-pager">1/100</span>
                             <img src="../../static/left.png" onclick="nextProduct()">
                             <span>To</span>
@@ -134,29 +134,29 @@
                                     <img src="../../static/down.png">
                                 </section>
                                 <section class="dropdown-content" id="order-price-sort">
-                                    <p onclick="changeDpTitle(this, 'order-price-sort', 'order-price-sort-text', 'Price: ', true)">Low to High</p>
-                                    <p onclick="changeDpTitle(this, 'order-price-sort', 'order-price-sort-text', 'Price: ', true)">High to Low</p>
+                                    <p onclick="changeDpTitle(this, 'order-price-sort', 'order-price-sort-text', 'Price: ', 2)">Low to High</p>
+                                    <p onclick="changeDpTitle(this, 'order-price-sort', 'order-price-sort-text', 'Price: ', 2)">High to Low</p>
                                 </section>
                             </section>
                         </section>
                         <section class="filter-time common-margin-search">
                             <section class="dropdown price">
                                 <section class="search-price" onclick="openAccountDp(true, 'order-time-sort')">
-                                    <span class="dropbtn" style="border: none;" id="order-time-sort-text">Time: Old to Latest</span>
+                                    <span class="dropbtn" style="border: none;" id="order-time-sort-text">Time: Latest to Old</span>
                                     <img src="../../static/down.png">
                                 </section>
                                 <section class="dropdown-content" id="order-time-sort">
-                                    <p onclick="changeDpTitle(this, 'order-time-sort', 'order-time-sort-text', 'Time: ', true)">Old to Latest</p>
-                                    <p onclick="changeDpTitle(this, 'order-time-sort', 'order-time-sort-text', 'Time: ', true)">Latest to Old</p>
+                                    <p onclick="changeDpTitle(this, 'order-time-sort', 'order-time-sort-text', 'Time: ', 2)">Old to Latest</p>
+                                    <p onclick="changeDpTitle(this, 'order-time-sort', 'order-time-sort-text', 'Time: ', 2)">Latest to Old</p>
                                 </section>
                             </section>
                         </section>
                         <section class="search-pagers">
-                            <img src="../../static/right.png" onclick="previous()">
-                            <span>1/100</span>
-                            <img src="../../static/left.png" onclick="next()">
+                            <img src="../../static/right.png" onclick="previousOrder()">
+                            <span id="order-pager">1/100</span>
+                            <img src="../../static/left.png" onclick="nextOrder()">
                             <span>To</span>
-                            <input type="text" name="index" placeholder="1" onkeydown="goToPage(event, this)">
+                            <input type="text" name="index" placeholder="1" onkeydown="goToOrderPage(event, this)">
                         </section>
                     </section>
                     <section class="my-product-list" id="my-order-list">
@@ -182,8 +182,8 @@
                                     <img src="../../static/down.png">
                                 </section>
                                 <section class="dropdown-content" id="collect-price-sort">
-                                    <p onclick="changeDpTitle(this, 'collect-price-sort', 'collect-price-sort-text', 'Price: ')">Low to High</p>
-                                    <p onclick="changeDpTitle(this, 'collect-price-sort', 'collect-price-sort-text', 'Price: ')">High to Low</p>
+                                    <p onclick="changeDpTitle(this, 'collect-price-sort', 'collect-price-sort-text', 'Price: ', 3)">Low to High</p>
+                                    <p onclick="changeDpTitle(this, 'collect-price-sort', 'collect-price-sort-text', 'Price: ', 3)">High to Low</p>
                                 </section>
                             </section>
                         </section>
@@ -194,8 +194,8 @@
                                     <img src="../../static/down.png">
                                 </section>
                                 <section class="dropdown-content" id="collect-time-sort">
-                                    <p onclick="changeDpTitle(this, 'collect-time-sort', 'collect-time-sort-text', 'Time: ')">Old to Latest</p>
-                                    <p onclick="changeDpTitle(this, 'collect-time-sort', 'collect-time-sort-text', 'Time: ')">Latest to Old</p>
+                                    <p onclick="changeDpTitle(this, 'collect-time-sort', 'collect-time-sort-text', 'Time: ', 3)">Old to Latest</p>
+                                    <p onclick="changeDpTitle(this, 'collect-time-sort', 'collect-time-sort-text', 'Time: ', 3)">Latest to Old</p>
                                 </section>
                             </section>
                         </section>

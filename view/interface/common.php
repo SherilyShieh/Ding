@@ -1,4 +1,39 @@
 <?php
+    class Order {
+        var $id;
+        var $buyer_id;
+        var $buyer_name;
+        var $saler_id;
+        var $saler_name;
+        var $store_id;
+        var $store_name;
+        var $product_id;
+        var $product_name;
+        var $product_icon;
+        var $product_price;
+        var $product_size;
+        var $product_color;
+        var $product_count;
+        var $create_time;
+
+        function __construct($par1, $par2, $par3, $par4, $par5, $par6, $par7, $par8, $par9, $par10, $par11, $par12, $par13, $par14, $par15) {
+            $this->id = $par1;
+            $this->buyer_id = $par2;
+            $this->buyer_name = $par3;
+            $this->buyer_name = $par4;
+            $this->saler_id = $par5;
+            $this->saler_name = $par6;
+            $this->store_name = $par7;
+            $this->product_id = $par8;
+            $this->product_name = $par9;
+            $this->product_icon = $par10;
+            $this->product_price = $par11;
+            $this->product_size = $par12;
+            $this->product_color = $par13;
+            $this->product_count = $par14;
+            $this->create_time = $par15;
+        }
+    }
     class Wish {
         var $id;
         var $cart_id;

@@ -31,8 +31,8 @@
         } else {
             $output = mysqli_fetch_row($result);
             $saler_id = $output[1];
-            $sql = "INSERT INTO `order` (buyer_id, buyer_name, saler_name, saler_id, store_id, store_name, product_id, product_name, product_icon, product_price, product_size, product_color, product_count, create_time)
-            VALUES ('{$item->buyer_id}', '{$item->buyer_name}', '{$saler_name }', '{$saler_id}','{$item->store_id}', '{$store_name}', '{$item->product_id}', '{$product_name}', '{$item->product_icon}', 
+            $sql = "INSERT INTO `order` (buyer_id, buyer_name, saler_id, saler_name, store_id, store_name, product_id, product_name, product_icon, product_price, product_size, product_color, product_count, create_time)
+            VALUES ('{$item->buyer_id}', '{$item->buyer_name}', '{$saler_id}', '{$saler_name }', '{$item->store_id}', '{$store_name}', '{$item->product_id}', '{$product_name}', '{$item->product_icon}', 
             '{$item->product_price}', '{$item->product_size}', '{$item->product_color}', '{$item->product_count}',CURRENT_TIMESTAMP);";
             $result = mysqli_query($con, $sql);
             if (!$result) {

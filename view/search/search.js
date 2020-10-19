@@ -45,8 +45,9 @@ function createSearchList(searchList) {
             </section>
         </section>`
         });
-        return searchSec;
+
     }
+    return searchSec;
 
 }
 
