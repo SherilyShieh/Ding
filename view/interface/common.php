@@ -131,8 +131,9 @@
         var $product_detail;
         var $create_time;
         var $update_time;
+        var $collections;
 
-        function __construct($par1, $par2, $par3, $par4, $par5, $par6, $par7, $par8, $par9, $par10, $par11, $par12, $par13) {
+        function __construct($par1, $par2, $par3, $par4, $par5, $par6, $par7, $par8, $par9, $par10, $par11, $par12, $par13, $par14) {
             $this->id = $par1;
             $this->store_id = $par2;
             $this->department = $par3;
@@ -146,6 +147,7 @@
             $this->product_detail = $par11;
             $this->create_time = $par12;
             $this->update_time = $par13;
+            $this->collections = $par14;
         }
     }
     class Response {

@@ -48,7 +48,7 @@ function changeNav(val) {
     } else if (val == 2) {
         createOrderView(1);
     } else if (val == 3) {
-        createCollectionView();
+        createCollectionView(1);
     }
 }
 
@@ -111,7 +111,7 @@ function changeDpTitle(el, dp, title, str, code) {
             createOrderView(1);
             break;
         case 3:
-            createCollectionView();
+            createCollectionView(1);
             break;
 
     }
@@ -670,36 +670,90 @@ function createOrderView(page) {
         showToast(err);
     });
 
+}
 
+function previousCollect() {
+
+    if (total_collect_count == 0) {
+        showToast("Current list is empty!")
+        return;
+    } else if (current_collect_page <= 1) {
+        showToast("Current page is the first page!")
+        return;
+    } else {
+        current_collect_page--;
+        createCollectionView(current_collect_page);
+
+    }
+}
+
+function nextCollect() {
+    if (current_collect_page < total_collect_page) {
+        current_collect_page++;
+        createCollectionView(current_collect_page);
+    } else {
+        showToast('This is the last page');
+    }
+}
+
+function goToCollectPage(event, elem) {
+    var evt = window.event || event;
+    if (evt.keyCode == 13) {
+        let index = elem.value;
+        if (index && index <= total_collect_page) {
+            createCollectionView(index);
+        } else {
+            showToast('Please enter a valid number!');
+        }
+    }
 }
 
 // ====================== order end ==================================
 
 // ====================== collections start ==================================
-function createCollectionView() {
+var total_collect_count = 0;
+var total_collect_page = 0;
+var current_collect_page = 1;
+
+function updateCollectPager(index) {
+    $('#collect-pager').text(`${index}/${total_order_page}`);
+}
+
+function createCollectionView(page) {
+    let user = checkLoginStatus();
+    let priceorder = getElments('collect-price-sort-text').innerText === "Price: Low to High" ? 'ASC' : 'DESC';
+    let timeorder = getElments('collect-time-sort-text').innerText === "Time: Old to Latest" ? 'ASC' : 'DESC';
+    current_collect_page = page;
     var productsView = '';
-    var list = getSearchList();
-    if (list.length) {
-        getElments('my-collect-list').style.display = 'flex';
-        getElments('my-collect-list-empty').style.display = 'none';
-        list.forEach((item, index) => {
-                    productsView += `
-            <section class="my-product-item">
-            <img src="${item.icon}" class="product-img" onclick="openProduct(${item.store_id},${item.id})">
-            <section class="item-detail">
-                <span class="item-name">${item.title}</span>
-                <span class="item-price">NZ$${item.price}</span>
-                <span class="item-size">Size: ${item.size.join('/')}</span>
-                <span class="item-color"> Color: ${item.color.join('/')}</span>
-                <span class="item-color"> Shop: ${item.shopName}</span>
-            </section>
-            </section>`;
-        });
-        addWidegt('my-collect-list', productsView).addP();
-    } else {
-        getElments('my-collect-list').style.display = 'none';
-        getElments('my-collect-list-empty').style.display = 'flex';
-    }
+    GetCollections({user_id: user.id, page, priceorder, timeorder}).then(data => {
+        total_collect_count = Number(data.count);
+        total_collect_page = Math.ceil(total_collect_count / 10);
+        updateCollectPager(current_order_page);
+        if (data.list && data.list.length) {
+            getElments('my-collect-list').style.display = 'flex';
+            getElments('my-collect-list-empty').style.display = 'none';
+            data.list.forEach((item, index) => {
+                        productsView += `
+                <section class="my-product-item">
+                <img src="${window.location.origin}${item.product_icon}" class="product-img" onclick="openProduct(${item.store_id},${item.id})">
+                <section class="item-detail">
+                    <span class="item-name">${item.product_name}</span>
+                    <span class="item-price">NZ$${item.product_price}</span>
+                    <span class="item-size">Size: ${JSON.parse(item.product_size).join('/')}</span>
+                    <span class="item-color"> Color: ${JSON.parse(item.product_color).join('/')}</span>
+                    <span class="item-color"> Shop: ${item.store_name}</span>
+                </section>
+                </section>`;
+            });
+            addWidegt('my-collect-list', productsView).addP();
+        } else {
+            getElments('my-collect-list').style.display = 'none';
+            getElments('my-collect-list-empty').style.display = 'flex';
+        }
+    }).catch(err=>{
+        showToast(err);
+    })
+ 
 
 }
-// ====================== collections start ==================================
+// ====================== collections end ==================================

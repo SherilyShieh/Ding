@@ -35,7 +35,7 @@
             $response = array();
             $index = 0;
             while($output = mysqli_fetch_row($result)) {
-                $product = new Product($output[0], $output[1], $output[2], $output[3], $output[4], urldecode($output[5]),urldecode($output[6]), $output[7], $output[8], $output[9], $output[10], $output[11], $output[12]);
+                $product = new Product($output[0], $output[1], $output[2], $output[3], $output[4], urldecode($output[5]),urldecode($output[6]), $output[7], $output[8], $output[9], $output[10], $output[11], $output[12], $output[13]);
                 $response[$index] = $product;
                 $index++;
             }

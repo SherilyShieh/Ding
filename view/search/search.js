@@ -40,7 +40,7 @@ function createSearchList(searchList) {
                         <img src="../../static/cart2.png" class="common-margin-search" onclick="openActionDialog(${index}, false)">
                         <img src="../../static/buy.png" onclick="openActionDialog(${index}, true)">
                     </section>
-                    <img src="${item.isCollected ? collected : uncollected }" onclick="collect(${index})" id="collected-img-${item.id}">
+                    <img src="${collectionStatus(index) ? collected : uncollected }" onclick="collect(${index})" id="collected-img-${item.id}">
                 </section>
             </section>
         </section>`
@@ -48,6 +48,20 @@ function createSearchList(searchList) {
 
     }
     return searchSec;
+
+}
+
+function collectionStatus(index) {
+    let user = initUser();
+    if (!user) {
+        return false;
+    }
+    let item = currentList[index];
+    if (item.collections) {
+        let array = JSON.parse(item.collections);
+        return array.indexOf(user.id) >= 0;
+    }
+    return false;
 
 }
 
@@ -208,12 +222,27 @@ function openActionDialog(index, isBuy) {
 
 // todo
 function collect(index) {
-    var list = getSearchList();
-    item = list[index];
-    item.isCollected = !item.isCollected;
-    getElments(`collected-img-${item.id}`).src = item.isCollected ? collected : uncollected;
-    modifyfunction(index, item);
-    showToast('Collect success!');
+    let user = checkLoginStatus();
+    item = currentList[index];
+    var arr;
+    if (item.collections) {
+        arr = JSON.parse(item.collections);
+        let index = arr.indexOf(user.id);
+        if (index >= 0) {
+            arr.splice(index, 1);
+        } else {
+            arr.push(user.id);
+        }
+    } else {
+        arr = [];
+        arr.push(user.id);
+    }
+    Collect({product_id: item.id, collections: JSON.stringify(arr)}).then(data=>{
+        showToast(data);
+        canvasSearchList();
+    }).catch(err=>{
+        showToast(err);
+    });
 
 }
 
@@ -227,7 +256,6 @@ function userActions(isBuy) {
         showToast('Please chose the color');
         return;
     }
-
 
     // add to cart list
     if (isBuy) {

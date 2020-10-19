@@ -274,3 +274,25 @@ function GetOrders(opt) {
         isFile: false
     });
 }
+
+function Collect(opt) {
+    return http({
+        method: 'POST',
+        url: '/view/interface/collect.php',
+        path: '',
+        body: opt,
+        header: '',
+        isFile: false
+    });
+}
+
+function GetCollections(opt) {
+    return http({
+        method: 'GET',
+        url: '/view/interface/getcollections.php',
+        path: '',
+        body: opt,
+        header: '',
+        isFile: false
+    });
+}

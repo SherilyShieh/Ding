@@ -27,7 +27,7 @@
             $response2 = new Response($resp, $status2);
         } else if (mysqli_num_rows($result) == 1) { 
             $output = mysqli_fetch_row($result);
-            $product = new Product($output[0], $output[1], $output[2], $output[3], $output[4], urldecode($output[5]),urldecode($output[6]), $output[7], $output[8], $output[9], $output[10], $output[11], $output[12]);
+            $product = new Product($output[0], $output[1], $output[2], $output[3], $output[4], urldecode($output[5]),urldecode($output[6]), $output[7], $output[8], $output[9], $output[10], $output[11], $output[12], $output[13] );
             $status2 = new Status(200, "Get product's infromation successfully!");
             $response2 = new Response($product, $status2);
         } else {

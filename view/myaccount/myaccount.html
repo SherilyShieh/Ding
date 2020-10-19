@@ -190,7 +190,7 @@
                         <section class="filter-time common-margin-search">
                             <section class="dropdown price">
                                 <section class="search-price" onclick="openAccountDp(true, 'collect-time-sort')">
-                                    <span class="dropbtn" style="border: none;" id="collect-time-sort-text">Time: Old to Latest</span>
+                                    <span class="dropbtn" style="border: none;" id="collect-time-sort-text">Time: Latest to Old</span>
                                     <img src="../../static/down.png">
                                 </section>
                                 <section class="dropdown-content" id="collect-time-sort">
@@ -200,11 +200,11 @@
                             </section>
                         </section>
                         <section class="search-pagers">
-                            <img src="../../static/right.png" onclick="previouspRoduct()">
-                            <span>1/100</span>
-                            <img src="../../static/left.png" onclick="nextProduct()">
+                            <img src="../../static/right.png" onclick="previousCollect()">
+                            <span id="collect-pager">1/100</span>
+                            <img src="../../static/left.png" onclick="nextCollect()">
                             <span>To</span>
-                            <input type="text" name="index" placeholder="1" onkeydown="goToPage(event, this)">
+                            <input type="text" name="index" placeholder="1" onkeydown="goToCollectPage(event, this)">
                         </section>
                     </section>
                     <section class="my-product-list" id="my-collect-list">
