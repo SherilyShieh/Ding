@@ -68,8 +68,10 @@ function checkLoginStatus() {
 
 }
 
-function GetCurrentRequest() {
-    checkLoginStatus();
+function GetCurrentRequest(needLogin) {
+    if (needLogin) {
+        checkLoginStatus();
+    }
     const url = location.search;
     let theRequest = new Object();
     if (url.indexOf("?") != -1) {
@@ -86,7 +88,7 @@ function GetCurrentRequest() {
 
 function initViewWithQuery() {
     if (window.location.pathname == '/view/search/search.html') {
-        let query = GetCurrentRequest();
+        let query = GetCurrentRequest(false);
         getElments('header-filter').innerText = query.dep ? query.dep : 'All';
         getElments('common-search-bar').value = query.keyword ? query.keyword : '';
     }
@@ -1125,7 +1127,7 @@ function checkPhone(e){
 
 function cancleErrorPhone(e) {
     e.style.border = defaultBorder;
-    getElments('error-nickname').style.display = "none";
+    getElments('error-phone').style.display = "none";
 }
 
 function checkNickname(e){

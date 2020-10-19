@@ -7,8 +7,8 @@ var unselectedColor = 'black';
 var selectedBorder = 'solid 1px #fd4a22';
 var unselectedBorder = 'solid 1px #C1C2C7';
 var currentPro = {
-    buyer_id: initUser().id,
-    buyer_name: initUser().nickname,
+    buyer_id: initUser() ? initUser.id : -1,
+    buyer_name: initUser() ? initUser().name : '',
     store_id: -1,
     product_id: -1,
     product_name: '',
@@ -128,7 +128,7 @@ function changeStatus(ele, str, isSize) {
 }
 
 function canvasSearchList() {
-    let query = GetCurrentRequest();
+    let query = GetCurrentRequest(false);
     if (!query) {
         showToast("Illegal connection");
         window.open(`${window.location.origin}/view/home/Home.html`, '_self');
@@ -247,6 +247,9 @@ function collect(index) {
 }
 
 function userActions(isBuy) {
+    let user = checkLoginStatus();
+    currentPro.buyer_id = user.id;
+    currentPro.buyer_name = user.nickname;
     if (!currentPro.product_size) {
         showToast('Please chose the size');
         return;
@@ -301,7 +304,7 @@ function changePriceSort(e) {
     openPriceSortDp(false);
     getElments('price-sort').innerText = 'Price: ' + e.innerText;
     let pod = e.innerText === 'Low to High' ? 'ASC' : 'DESC';
-    let query = GetCurrentRequest();
+    let query = GetCurrentRequest(false);
     query.pod = pod;
     let newq = '';
     query.page = 1;
@@ -321,7 +324,7 @@ function changeTimeSort(e) {
     openTimeSortDp(false);
     getElments('time-sort').innerText = 'Time: ' + e.innerText;
     let tod = e.innerText === 'Latest to Old' ? 'DESC' : 'ASC';
-    let query = GetCurrentRequest();
+    let query = GetCurrentRequest(false);
     query.tod = tod;
     let newq = '';
     query.page = 1;
@@ -350,7 +353,7 @@ function openTypes(isOpen) {
 function changeType(e) {
     openTypes(false);
     getElments('search-types').innerText = 'Categories: ' + e.innerText;
-    let query = GetCurrentRequest();
+    let query = GetCurrentRequest(false);
     if (query.type) {
         if(e.innerText === 'All') {
             delete(query['type']);
@@ -379,7 +382,7 @@ function previous() {
     }
     current_page++;
     resetPager();
-    let query = GetCurrentRequest();
+    let query = GetCurrentRequest(false);
     query.page = current_page;
     let newq = '';
     for (key in query){
@@ -397,7 +400,7 @@ function next() {
     }
     current_page--;
     resetPager();
-    let query = GetCurrentRequest();
+    let query = GetCurrentRequest(false);
     query.page = current_page;
     let newq = '';
     for (key in query){
@@ -421,7 +424,7 @@ function goToPage(event, elem) {
         }
         current_page = elem.value;
         resetPager();
-        let query = GetCurrentRequest();
+        let query = GetCurrentRequest(false);
         query.page = current_page;
         let newq = '';
         for (key in query){
@@ -469,7 +472,7 @@ function searchwithrange() {
         showToast('The start time should be earlier than the end time!');
         return;
     }
-    let query = GetCurrentRequest();
+    let query = GetCurrentRequest(false);
     let newquery = '';
     if (query.st) {
         delete(query['st']);
@@ -494,7 +497,7 @@ function searchwithrange() {
 }
 
 function initSubViewWithQuery() {
-    let query = GetCurrentRequest();
+    let query = GetCurrentRequest(false);
     current_page = query.page;
     if (query.st) {
         getElments('start-time').value = timestrampToStr(Number(query.st)).substr(0,10);

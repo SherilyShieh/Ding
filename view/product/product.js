@@ -7,8 +7,8 @@ var unselectedColor = 'black';
 var selectedBorder = 'solid 2px #F1442A';
 var unselectedBorder = 'solid 2px #C1C2C7';
 var myproduct = {
-    buyer_id: initUser().id,
-    buyer_name: initUser().nickname,
+    buyer_id: initUser() ? initUser.id : -1,
+    buyer_name: initUser() ? initUser.nickname : '',
     store_id: -1,
     product_id: -1,
     product_name: '',
@@ -33,7 +33,7 @@ function initMyproduct(data) {
  * get query info refresh page
  */
 function GetRequest() {
-    checkLoginStatus();
+    // checkLoginStatus();
     const url = location.search;
     let theRequest = new Object();
     if (url.indexOf("?") != -1) {
@@ -164,6 +164,10 @@ function changeCount(isAdd) {
     myproduct.product_count = value;
 }
 function detailAction(isBuy) {
+    let user = checkLoginStatus();
+    myproduct.buyer_id = user.id;
+    myproduct.buyer_name = user.nickname;
+    
     if (!myproduct.product_size) {
         showToast('Please chose the size');
         return;

@@ -1,5 +1,5 @@
 function createStoreView() {
-    let request = GetCurrentRequest();
+    let request = GetCurrentRequest(false);
     GetStoreInfo({ storeid: request.sid }).then(data => {
         var storeView = `
         <section class="store-name"> <img src="../../static/store.png"><span>${data.store_name}</span></section>
@@ -28,7 +28,7 @@ function createStoreView() {
 function searchInStore(val) {
     let key = getElments(val).value;
     if (key) {
-        let sid = GetCurrentRequest().sid
+        let sid = GetCurrentRequest(false).sid
         window.open(`${window.location.origin}${window.location.pathname}?sid=${sid}&keyword=${key}`, '_self');
     } else {
         showToast("Please input some information to search!")
