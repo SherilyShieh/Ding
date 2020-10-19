@@ -1323,7 +1323,7 @@ function sendFeedback() {
     && checkFeedback(getElments('feedback-email'), 'error-feedback-email', true) 
     && checkFeedback(getElments('feedback-content'), 'error-feedback-content', false)) {
         CreateFeedback({
-            user_id: user ? user.id : '',
+            user_id: user ? user.id : 0,
             cur_webpage: window.location.pathname,
             name: getElments('feedback-name').value,
             email: getElments('feedback-email').value,
