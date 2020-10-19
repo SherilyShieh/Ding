@@ -6,8 +6,28 @@ var selectedColor = 'white';
 var unselectedColor = 'black';
 var selectedBorder = 'solid 2px #F1442A';
 var unselectedBorder = 'solid 2px #C1C2C7';
-var productInfo;
+var myproduct = {
+    buyer_id: initUser().id,
+    buyer_name: initUser().nickname,
+    store_id: -1,
+    product_id: -1,
+    product_name: '',
+    product_size: '',
+    product_color: '',
+    product_price: -1,
+    product_icon: '',
+    product_count: 1,
+    isCollected: false,
+}
+var productinfo;
 
+function initMyproduct(data) {
+    myproduct.store_id = data.store_id;
+    myproduct.product_id = data.id;
+    myproduct.product_name = formatStr(data.product_name);
+    myproduct.product_price = data.product_price;
+    myproduct.product_icon = data.product_icon;
+}
 /**
  * get query info refresh page
  */
@@ -32,14 +52,10 @@ function GetRequest() {
             console.log(data);
             storeInfo = data;
             GetProductInfo({ productid: pid }).then(data => {
-
-                data['selected_color'] = '';
-                data['selected_size'] = '';
-                data['count'] = 0;
-                productInfo = data;
+                productinfo = data;
+                initMyproduct(data);
                 console.log(data);
-
-                createProductInfo(storeInfo, productInfo)
+                createProductInfo(storeInfo, data)
             }).catch(err => {
                 console.log(err);
                 showToast(err);
@@ -97,8 +113,8 @@ function createProductInfo(storeinfo, productinfo) {
                 <img src="../../static/add.png" onclick="changeCount(true)">
             </section>
             <section class="behavior-on-product">
-                <section class="product-btn" onclick="detailAction(true)"><span>ADD</span></section>
-                <section class="product-btn" onclick="detailAction(false)"><span>BUY</span></section>
+                <section class="product-btn" onclick="detailAction(false)"><span>ADD</span></section>
+                <section class="product-btn" onclick="detailAction(true)"><span>BUY</span></section>
             </section>
         </section>
     </section>
@@ -121,13 +137,13 @@ function resetInfoStatus(val, array) {
 function changeInfoStatus(el, isSize, str) {
     var isSelected = false;
     if (isSize) {
-        isSelected = (str == productInfo.selected_size);
-        productInfo.selected_size = isSelected ? '' : str;
-        resetInfoStatus('detail-size', JSON.parse(productInfo.product_size));
+        isSelected = (str == myproduct.product_size);
+        myproduct.product_size = isSelected ? '' : str;
+        resetInfoStatus('detail-size', JSON.parse(productinfo.product_size));
     } else {
-        isSelected = (str == productInfo.selected_color);
-        productInfo.selected_color = isSelected ? '' : str;
-        resetInfoStatus('detail-color', JSON.parse(productInfo.product_color));
+        isSelected = (str == myproduct.product_color);
+        myproduct.product_color = isSelected ? '' : str;
+        resetInfoStatus('detail-color', JSON.parse(productinfo.product_color));
     }
     el.style.backgroundColor = isSelected ? unselectedBg : selectedBg;
     el.style.border = isSelected ? unselectedBorder : selectedBorder;
@@ -145,20 +161,20 @@ function changeCount(isAdd) {
         value -= 1;
         target.value = value;
     }
-    productInfo.count = value;
+    myproduct.product_count = value;
 }
 function detailAction(isBuy) {
-    if (!productObj.selectedSize) {
+    if (!myproduct.product_size) {
         showToast('Please chose the size');
         return;
     }
 
-    if (!productObj.selectedColor) {
+    if (!myproduct.product_color) {
         showToast('Please chose the color');
         return;
     }
 
-    if (productObj.count < 0) {
+    if (myproduct.product_count < 0) {
         showToast('Please input count!');
         return;
     }
@@ -169,6 +185,10 @@ function detailAction(isBuy) {
         showToast('Purchase success!');
     } else {
         // todo
-        showToast('Add to cart success!');
+        AddToCart(myproduct).then(data => {
+            showToast(data);
+        }).catch(err => {
+            showToast(err);
+        })
     }
 }

@@ -1,5 +1,4 @@
 <?php
-    session_start();
     header('Access-Control-Allow-Origin:*'); 
     header('Content-type: application/json');
     Include_once "./common.php";
@@ -37,7 +36,6 @@
             $response2 = new Response($banners, $status2);
         } 
         JSON_STRING($response2);
-        session_destroy();
 
     }
     mysqli_close($con);

@@ -6,19 +6,9 @@
     // get request
     $body = file_get_contents('php://input');
     $request = json_decode($body);
-    $userId = $request->userid;
-    $modify = $request->info;
+    $wish_id = $request->wish_id;
+    $count = $request->count;
     
-    $index = 0;
-    $sub = '';
-    foreach($modify as $key => $value) 
-    {
-        
-        $sub =  $sub . $key. '=' ."'". $value. "'" .',';
-        
-    }
-    $rest  = substr(  $sub,0,strlen($sub)-1);
-    // echo $rest;
     // init connection
     Global $user;
     Global $password;
@@ -27,7 +17,7 @@
     Global $port;
     $con = new mysqli($host,$user,$password,$db,$port);
 
-    $sql = "UPDATE user SET $rest WHERE id = $userId";
+    $sql = "UPDATE wishlist SET product_count = '$count' WHERE id = $wish_id";
     // echo $sql;
     if (!$con) {
         die("connect error:" . mysqli_connect_error());

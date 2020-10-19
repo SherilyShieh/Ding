@@ -6,19 +6,9 @@
     // get request
     $body = file_get_contents('php://input');
     $request = json_decode($body);
-    $userId = $request->userid;
-    $modify = $request->info;
+    $range = join(",",$request->ids);
     
-    $index = 0;
-    $sub = '';
-    foreach($modify as $key => $value) 
-    {
-        
-        $sub =  $sub . $key. '=' ."'". $value. "'" .',';
-        
-    }
-    $rest  = substr(  $sub,0,strlen($sub)-1);
-    // echo $rest;
+
     // init connection
     Global $user;
     Global $password;
@@ -27,8 +17,8 @@
     Global $port;
     $con = new mysqli($host,$user,$password,$db,$port);
 
-    $sql = "UPDATE user SET $rest WHERE id = $userId";
-    // echo $sql;
+    $sql = "DELETE FROM wishlist WHERE id in ($range)";
+
     if (!$con) {
         die("connect error:" . mysqli_connect_error());
         $status1 = new Status(500, "connect error:" . mysqli_connect_error());
@@ -37,15 +27,15 @@
     } else{
         $result = mysqli_query($con, $sql);
         if (!$result) {
-            $resp = "Update falied";
+            $resp = "Delete falied";
             $status2 = new Status(500, "query error:" . mysqli_error($con));
         } else {
-            $resp = "Update successfully";
-            $status2 = new Status(200, "success");
+            $resp = "Delete successfully";
+            $status2 = new Status(200, "Delete successfully");
         }
         $response2 = new Response($resp, $status2);
         JSON_STRING($response2);
-
     }
     mysqli_close($con);
+
 ?>

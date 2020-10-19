@@ -208,3 +208,47 @@ function Search(opt) {
         isFile: false
     });
 }
+
+function AddToCart(opt) {
+    return http({
+        method: 'POST',
+        url: '/view/interface/addtocart.php',
+        path: '',
+        body: opt,
+        header: '',
+        isFile: false
+    });
+}
+
+function GetWishList(opt) {
+    return http({
+        method: 'GET',
+        url: '/view/interface/getwishlist.php',
+        path: '',
+        body: opt,
+        header: '',
+        isFile: false
+    });
+}
+
+function DeleteWishs(opt) {
+    return http({
+        method: 'POST',
+        url: '/view/interface/deletewishs.php',
+        path: '',
+        body: opt,
+        header: '',
+        isFile: false
+    });
+}
+
+function ModifyWish(opt) {
+    return http({
+        method: 'POST',
+        url: '/view/interface/modifywish.php',
+        path: '',
+        body: opt,
+        header: '',
+        isFile: false
+    });
+}

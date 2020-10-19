@@ -17,6 +17,9 @@ var isShowRLoginPwd = false;
 var isShowRegisterPwd = false;
 var isShowRegisterConfirm = false;
 
+var curwishlist = [];
+var totalwish = 0;
+var selectedwish = [];
 /**
  * convert the str which contain '/' into array
  * @param {*} str 
@@ -54,19 +57,6 @@ function formatObject(obj) {
     return null;
 
 }
-
-// function formatObjectWithTarget(obj, target) {
-//     if (obj) {
-//         for (var key in obj) {
-//             if (key === target) {
-//                 delete obj[key];
-//             }
-//         }
-//         return obj;
-//     }
-//     return null;
-
-// }
 
 function checkLoginStatus() {
     let user = initUser();
@@ -404,54 +394,56 @@ function addCartItemWidget() {
     t.addP('cart-list');
 }
 
-// loveArr.forEach(e => {
-//     loveStr += `<div class="row">
-//                     <div class="title">${e.title}</div>
-//                     <div class="text">
-//                         ${e.textArr.map((element, index) => {
-//                             return `<span>${index + 1}.${element}</span>`
-//                         }).join('')}
-//                     </div>
-//                 </div>`
-// })
-function crearCartList() {
-    var cartList = getCartList();
-    var mycart = '';
-    if (cartList.length) {
-        cartList.forEach((item, index) => {
-                    mycart += `<div class="cart-item">
-            <section class="cart-shop">
-                <img src="../../static/unselected.png" id="cart-shop-selection-${item.unique}" class="cart-selection-btn" onclick="changeSelected(${index})">
-                <span id="cart-shop-name" onclick="openStore(${item.sid})">${item.store}</span>
-            </section>
-            <section id="cart-product-list">
-                ${item.products.map((pro, pindex) => {
-                    return `<section class="cart-product-item">
-                    <img src="../../static/unselected.png" id="cart-product-selection-${pro.id}" class="cart-selection-btn" onclick="changeItemSelected(${index}, ${pindex})">
-                    <img src="${pro.icon}" class="cart-product-icon" onclick="openProduct(${item.sid},${pro.pid})">
-                    <section class="cart-product-info">
-                        <span class="cart-product-name">${pro.title}</span>
-                        <span>Size: ${pro.size}</span>
-                        <span>Color: ${pro.color}</span>
-                        <section class="cart-product-price">
-                            <span>NZ$${pro.price}</span>
-                            <section class="cart-product-action">
-                                <img src="../../static/mins1.png" onclick="deleteCount(${index}, ${pindex})">
-                                <input type="number" value="${pro.count}" id="cart-product-number-${item.unique}-${pro.id}" min="1">
-                                <img src="../../static/add1.png"  onclick="addCount(${index}, ${pindex})">
+
+function createCartList() {
+    // var cartList = getCartList();
+
+    GetWishList({ user_id: initUser().id }).then(data => {
+                var mycart = '';
+                totalwish = data.count;
+                getElments('cart-red-num').innerText = data.count + '';
+                if (data.list.length) {
+                    curwishlist = data.list;
+                    data.list.forEach((item, index) => {
+                                item['isSelected'] = false;
+                                mycart += `<div class="cart-item">
+                <section class="cart-shop">
+                    <img src="../../static/unselected.png" id="cart-shop-selection-${item.store_id}" class="cart-selection-btn" onclick="changeSelected(${index})">
+                    <span id="cart-shop-name" onclick="openStore(${item.store_id})">${item.store_name}</span>
+                </section>
+                <section id="cart-product-list">
+                    ${item.products.map((pro, pindex) => {
+                        pro['isSelected'] = false;
+                        return `<section class="cart-product-item" id="cart-product-item-${pro.id}">
+                        <img src="../../static/unselected.png" id="cart-product-selection-${pro.id}" class="cart-selection-btn" onclick="changeItemSelected(${index}, ${pindex})">
+                        <img src="${window.location.origin}${pro.product_icon}" class="cart-product-icon" onclick="openProduct(${item.store_id},${pro.product_id})">
+                        <section class="cart-product-info">
+                            <span class="cart-product-name">${pro.product_name}</span>
+                            <span>Size: ${pro.product_size}</span>
+                            <span>Color: ${pro.product_color}</span>
+                            <section class="cart-product-price">
+                                <span>NZ$${pro.product_price}</span>
+                                <section class="cart-product-action">
+                                    <img src="../../static/mins1.png" onclick="deleteCount(${index}, ${pindex})">
+                                    <input type="number" value="${pro.product_count}" id="cart-product-number-${pro.id}" min="1">
+                                    <img src="../../static/add1.png"  onclick="addCount(${index}, ${pindex})">
+                                </section>
                             </section>
                         </section>
-                    </section>
-                </section>`
-                }).join('')}
-            </section>
-        </div>`;
-        });
-    }
-    return mycart;
+                    </section>`
+                    }).join('')}
+                </section>
+            </div>`;
+            });
+        }
+        canvasMycart(mycart);
+    }).catch(err=>{
+        showToast(err);
+    });
+    
+
 }
-function canvasMycart() {
-    var wid = crearCartList();
+function canvasMycart(wid) {
     var list = getElments('cart-list');
     var empty = getElments('cart-list-empty');
     if (wid) {
@@ -474,16 +466,15 @@ function openStore(val) {
     window.open(`${window.location.origin}/view/mystore/mystore.html?sid=${val}`, '_self');
 }
 
+
 function changeSelected(val) {
     // change radio status, add or remove into/form selectedlist
-    // alert(val);
-    var mycart = getCartList();
-    var shop = mycart[val];
+    var shop = curwishlist[val];
     shop.isSelected = !shop.isSelected;
     if (shop.isSelected) {
-        getElments(`cart-shop-selection-${shop.unique}`).src = selectedIcon;
+        getElments(`cart-shop-selection-${shop.store_id}`).src = selectedIcon;
     } else {
-        getElments(`cart-shop-selection-${shop.unique}`).src = unselectedIcon;
+        getElments(`cart-shop-selection-${shop.store_id}`).src = unselectedIcon;
     }
     shop.products.map((item) => {
         if (shop.isSelected) {
@@ -494,14 +485,59 @@ function changeSelected(val) {
             getElments(`cart-product-selection-${item.id}`).src = unselectedIcon; 
         }
     });
-    changeSelectedList(shop, val);
-    // console.log(shop);
+    console.log('curwishlist', curwishlist);
+    refreshselstedList(shop);
+}
+function findposition(e) {
+    for (var i = 0; i < selectedwish.length; i++) {
+        var item = selectedwish[i];
+        if (e.id == item.id) {
+            return i;
+        }
+    }
+    return -1;
+}
+function refreshselstedList(shop) {
+    if (selectedwish.length) {
+        shop.products.forEach((e) => {
+            var fIndex = findposition(e);
+            if (fIndex >= 0 && !e.isSelected) {
+                selectedwish.splice(fIndex, 1);
+            } else if (fIndex < 0 && e.isSelected) {
+                selectedwish.push(e);
+            }
+        });
+    } else {
+        shop.products.forEach((e) => {
+            if (e.isSelected) {
+                selectedwish.push(e);
+            }
+        });
+    }
+    console.log('selectedwish:', selectedwish);
+}
+
+function refreshSelectedCount(product, isDelete) {
+    if (selectedwish.length) {
+        if (!isDelete) {
+            selectedwish.forEach(e => {
+                if (e.id === product.id) {
+                    e.product_count = product.product_count;
+                }
+            });
+        } else {
+            let index = findposition(product);
+            if (index >= 0) {
+                selectedwish.splice(index, 1);
+            }
+        }
+    }
+    
 }
 
 function changeItemSelected(val1, val2) {
     // change radio status, add or remove into/form selectedlist
-    // alert(val1+ ":" +val2);
-    var shop = mycart[val1];
+    var shop = curwishlist[val1];
     shop.products[val2].isSelected = !shop.products[val2].isSelected;
     if (shop.products[val2].isSelected) {
         getElments(`cart-product-selection-${shop.products[val2].id}`).src = selectedIcon;
@@ -515,53 +551,76 @@ function changeItemSelected(val1, val2) {
     shop.isSelected = isSelected;
     
     if (isSelected) {
-        getElments(`cart-shop-selection-${shop.unique}`).src = selectedIcon;
+        getElments(`cart-shop-selection-${shop.store_id}`).src = selectedIcon;
     } else {
-        getElments(`cart-shop-selection-${shop.unique}`).src = unselectedIcon;
+        getElments(`cart-shop-selection-${shop.store_id}`).src = unselectedIcon;
     }
-    changeSelectedList(shop, val1);
+    console.log('curwishlist', curwishlist);
+    refreshselstedList(shop);
 }
 
 function addCount(val1, val2) {
     // change item count and total price
-    // alert(val1+ ":" +val2);
-    var list = getCartList();
-    var shop = list[val1];
+    var shop = curwishlist[val1];
     var product = shop.products[val2];
-    product.count += 1;
-    getElments(`cart-product-number-${shop.unique}-${product.id}`).value = product.count;
+    let count = Number(product.product_count) 
+    product.product_count = count + 1;
+    getElments(`cart-product-number-${product.id}`).value = product.product_count;
     shop.products.splice(val2, 1, product);
-    updateStatus(shop, val1);
+    refreshSelectedCount(product, false);
+    modifywish(product.id, product.product_count);
 }
 
 function deleteCount(val1, val2) {
     // change item count and total price, if count = 0, remove item and refresh item
-    // alert(val1+ ":" +val2);
-    var list = getCartList();
-    var shop = list[val1];
+    var shop = curwishlist[val1];
     var product = shop.products[val2];
-    if (product.count > 1) {
-        product.count -= 1;
-        getElments(`cart-product-number-${shop.unique}-${product.id}`).value = product.count;
+    let count = Number(product.product_count) 
+    if ( count > 1) {
+        product.product_count = count - 1;
+        getElments(`cart-product-number-${product.id}`).value = product.product_count;
         shop.products.splice(val2, 1, product);
-        updateStatus(shop, val1);
+        refreshSelectedCount(product, false);
+        modifywish(product.id, product.product_count);
     } else {
         shop.products.splice(val2, 1);
-        if (shop.products.length) {
-            updateStatus(shop, val1);
-        } else {
-            updateStatus(null, val1);
-        }
-        // removeChild('cart-list');
-        canvasMycart();   
+        refreshSelectedCount(product, true);
+        let ids = [];
+        ids.push(product.id);
+        deletewishs(ids);
+        
+ 
     }
 }
 
+function modifywish(id, count) {
+    ModifyWish({
+        wish_id: id,
+        count
+    }).then(data=>{
+        console.log(data);
+    }).catch(err=>{
+        showToast(err);
+    });
+}
+
+function deletewishs(ids) {
+    // now won't remeber the selected status.
+    DeleteWishs({
+        ids
+    }).then(data=>{
+        console.log(data);
+        createCartList();
+    }).catch (err=>{
+        showToast(err);
+    });
+}
 
 
 function purchase() {
-    if (getCartList().length) {
+    if (selectedwish.length) {
         // notify sucess
+        
         closeCart();
         showToast('Purchase success!');
         if (deleteSelectedList()) {
@@ -575,12 +634,15 @@ function purchase() {
 
 function deleteSelected() {
     // remove item and refresh item
-    // alert('delete');
-    if (deleteSelectedList()) {
-        showToast('delete product');
-        canvasMycart();
+    if (!selectedwish.length) {
+        showToast("No items are currently selected!");
+        return;
     }
-
+    let ids = [];
+    selectedwish.forEach(e => {
+        ids.push(e.id);
+    });
+    deletewishs(ids);
 
 }
 
@@ -1302,9 +1364,8 @@ window.onload = function() {
     addCommonFooter();
     reset();
     initFilterDorp();
-    canvasMycart();
+    createCartList();
     refreshTotal(getCartTotal());
     createFeedbackCenter();
     initViewWithQuery();
-    // initBanner();
 };

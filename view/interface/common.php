@@ -1,4 +1,47 @@
 <?php
+    class Wish {
+        var $id;
+        var $cart_id;
+        var $buyer_id;
+        var $buyer_name;
+        var $store_id;
+        var $store_name;
+        var $product_id;
+        var $product_name;
+        var $product_icon;
+        var $product_size;
+        var $product_color;
+        var $product_count;
+        var $product_price;
+
+        function __construct($par1, $par2, $par3, $par4, $par5, $par6, $par7, $par8, $par9, $par10, $par11, $par12, $par13) {
+            $this->id = $par1;
+            $this->cart_id = $par2;
+            $this->buyer_id = $par3;
+            $this->buyer_name = $par4;
+            $this->store_id = $par5;
+            $this->store_name = $par6;
+            $this->product_id = $par7;
+            $this->product_name = $par8;
+            $this->product_icon = $par9;
+            $this->product_size = $par10;
+            $this->product_color = $par11;
+            $this->product_count = $par12;
+            $this->product_price = $par13;
+        }
+    }
+
+    class WishWrap {
+        var $store_id;
+        var $store_name;
+        var $products;
+
+        function __construct($par1, $par2, $par3) {
+            $this->store_id = $par1;
+            $this->store_name = $par2;
+            $this->products = $par3;
+        }
+    }
     class Banner {
         var $img;
         var $link;

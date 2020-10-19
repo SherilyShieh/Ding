@@ -1,5 +1,3 @@
-
-
 var mycart = new Array();
 var selectedList = new Array();
 var total = 10;
@@ -391,7 +389,7 @@ function changeSelectedList(item, index) {
         item.products.forEach((e) => {
             var fIndex = findIndex(e, item);
             if (fIndex >= 0 && !e.isSelected) {
-                selectedList.slice(fIndex, 1, e);
+                selectedList.splice(fIndex, 1, e);
             } else if (fIndex < 0 && e.isSelected) {
                 selectedList.push(e);
             }

@@ -7,7 +7,6 @@
     $storeid = $_GET["storeid"];
     if (isset($_GET["keyword"])) {
         $key = $_GET["keyword"];
-        // $key = '_'.$key.'_';
         $sql = "SELECT * FROM product WHERE store_id = '$storeid' and (`type` like '%$key%' or department like '%$key%' or product_name like '%$key%')";
     } else {
         $sql = "SELECT * FROM product WHERE store_id = '$storeid' ";

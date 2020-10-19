@@ -9,8 +9,8 @@ var unselectedBorder = 'solid 1px #C1C2C7';
 var currentPro = {
     buyer_id: initUser().id,
     buyer_name: initUser().nickname,
-    product_id: -1,
     store_id: -1,
+    product_id: -1,
     product_name: '',
     product_size: '',
     product_color: '',
@@ -185,7 +185,7 @@ function changeQuantities(isAdd) {
         value -= 1;
         target.value = value;
     }
-    currentPro.count = value;
+    currentPro.product_count = value;
 
 }
 function closeopenDialog(isOpen) {
@@ -198,15 +198,14 @@ function openActionDialog(index, isBuy) {
     let item = currentList[index];
     selectedPro = item;
     addWidegt('action-dialog-content', createOptionDialog(item, isBuy)).addP();
-    currentPro.id = item.id;
-    currentPro.sid = item.store_id;
-    // currentPro.location = item.location;
-    // currentPro.shopName = item.shopName;
-    currentPro.title = item.title;
-    currentPro.price = item.price;
-    currentPro.icon = item.icon;
+    currentPro.product_id = item.id;
+    currentPro.store_id = item.store_id;
+    currentPro.product_name = formatStr(item.product_name);
+    currentPro.product_price = item.product_price;
+    currentPro.product_icon = item.product_icon;
 }
 
+// todo
 function collect(index) {
     var list = getSearchList();
     item = list[index];
@@ -234,10 +233,16 @@ function userActions(isBuy) {
         // create order
         showToast('Purchase success!');
     } else {
-
-        showToast('Add to cart success!');
+        // add to cart
+        AddToCart(currentPro).then(data => {
+            showToast(data);
+            closeopenDialog(false);
+        }).catch(err => {
+            showToast(err);
+            closeopenDialog(false);
+        })
     }
-    closeopenDialog(false);
+
 }
 
 function openPriceSortDp(isOpen) {
