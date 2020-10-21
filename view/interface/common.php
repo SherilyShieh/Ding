@@ -237,5 +237,5 @@
     $password = 'root';
     $db = 'ding_database';
     $host = 'localhost';
-    $port = 8889;
+    $port = 8889; // please change your own database if you wanna run on your computer
 ?>
