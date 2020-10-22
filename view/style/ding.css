@@ -239,12 +239,14 @@ body {
 .banner-indicator img {
     width: 14px;
     margin: 5px;
+    cursor: pointer;
 }
 
 .banner-contanier img {
     height: 100%;
     width: 100%;
     border-radius: 0 10px 10px 0;
+    cursor: pointer;
 }
 
 .type-div {

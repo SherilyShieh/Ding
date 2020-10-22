@@ -1,19 +1,4 @@
-var productObj = {
-    id: 0,
-    sid: 1,
-    title: "ASICS Women's Gel-Venture 6 Running-Shoes",
-    size: ['5.5', '5.0', '6.0', '6.5'],
-    selectedSize: '',
-    color: ['red', 'white', 'black'],
-    selectedColor: '',
-    count: -1,
-    price: 200.00,
-    icon: '../../static/boys_boot.png',
-    shopName: 'Alexander',
-    location: 'Wellington',
-    contentImg: '../../static/detail.png',
-    contentInfo: 'Get out and explore in the redesigned GEL-VENTURE 6. Designed to take on rugged terrain, this model comes complete with a trail-specific outsole and high-abrasion rubber for confidence-inspiring traction. Rearfoot GEL cushioning absorbs shock to keep you comfortable as you pound along the path, while the removable sockliner lets you insert custom orthotics for an even more personalized fit. Weight: 9.0 oz.'
-}
+GetRequest();
 
 var selectedBg = '#F1442A';
 var unselectedBg = '#ffffff';
@@ -21,26 +6,92 @@ var selectedColor = 'white';
 var unselectedColor = 'black';
 var selectedBorder = 'solid 2px #F1442A';
 var unselectedBorder = 'solid 2px #C1C2C7';
+var myproduct = {
+    buyer_id: initUser() ? initUser.id : -1,
+    buyer_name: initUser() ? initUser.nickname : '',
+    store_id: -1,
+    product_id: -1,
+    product_name: '',
+    product_size: '',
+    product_color: '',
+    product_price: -1,
+    product_icon: '',
+    product_count: 1,
+    isCollected: false,
+}
+var productinfo;
+var current_store;
 
-function createProductInfo() {
-    var proInfo = `<section class="store-name"> <img src="../../static/store.png"><span>${productObj.shopName}'s Store</span></section>
+function initMyproduct(data) {
+    myproduct.store_id = data.store_id;
+    myproduct.product_id = data.id;
+    myproduct.product_name = formatStr(data.product_name);
+    myproduct.product_price = data.product_price;
+    myproduct.product_icon = data.product_icon;
+}
+/**
+ * get query info refresh page
+ */
+function GetRequest() {
+    // checkLoginStatus();
+    const url = location.search;
+    let theRequest = new Object();
+    if (url.indexOf("?") != -1) {
+        let str = url.substr(1);
+        strs = str.split("&");
+        for (let i = 0; i < strs.length; i++) {
+            theRequest[strs[i].split("=")[0]] = unescape(strs[i].split("=")[1]);
+        }
+    }
+    console.log(theRequest);
+
+    let sid = Number(theRequest.sid);
+    let pid = Number(theRequest.pid);
+    if (sid && pid) {
+        GetStoreInfo({ storeid: sid }).then(data => {
+            console.log(data);
+            current_store = data;
+            GetProductInfo({ productid: pid }).then(data => {
+                productinfo = data;
+                initMyproduct(data);
+                console.log(data);
+                createProductInfo(current_store, data)
+            }).catch(err => {
+                console.log(err);
+                showToast(err);
+            });
+        }).catch(err => {
+            console.log(err);
+            showToast(err);
+        });
+    } else {
+        showToast("Illegal connection");
+        window.open(`${window.location.origin}/view/home/Home.html`, '_self');
+    }
+
+
+}
+
+
+function createProductInfo(storeinfo, productinfo) {
+    var proInfo = `<section class="store-name"> <img src="../../static/store.png"><span>${storeinfo.store_name}'s Store</span></section>
     <section class="store-search">
-        <span class="store-home" onclick="openStore(${productObj.sid})">Store Home</span>
+        <span class="store-home" onclick="openStore(${storeinfo.id})">Store Home</span>
         <section class="store-search-bar">
             <input type="text" name="product" placeholder="search in this store">
-            <img src="../../static/search.png" onclick="openStore(${productObj.sid})">
+            <img src="../../static/search.png" onclick="openStore(${storeinfo.id})">
         </section>
     </section>
     <section class="product-detail">
-        <img src="${productObj.icon}" class="product-main-img">
+        <img src="${window.location.origin}${productinfo.product_icon}" class="product-main-img">
         <section class="product-purchase-info">
-            <span class="product-name">${productObj.title}</span>
-            <span class="product-price">NZ$${productObj.price}</span>
+            <span class="product-name">${productinfo.product_name}</span>
+            <span class="product-price">NZ$${productinfo.product_price}</span>
             <section class="product-size">
                 <span class="product-size-title">Size:</span>
                 <section class="product-size-list">
                     ${
-                        productObj.size.map((item, index)=> {
+                        JSON.parse(productinfo.product_size).map((item, index)=> {
                             return `<section class="product-size-info" id="detail-size-${index}" onclick="changeInfoStatus(this, true, '${item}')"><span>${item}</span></section>`
                         }).join('')
                     }
@@ -50,7 +101,7 @@ function createProductInfo() {
                 <span class="product-size-title">Color:</span>
                 <section class="product-size-list">
                     ${
-                        productObj.color.map((item, index)=> {
+                        JSON.parse(productinfo.product_color).map((item, index)=> {
                             return `<section class="product-size-info" id="detail-color-${index}" onclick="changeInfoStatus(this, false, '${item}')"><span>${item}</span></section>`
                         }).join('')
                     }
@@ -62,19 +113,20 @@ function createProductInfo() {
                 <img src="../../static/add.png" onclick="changeCount(true)">
             </section>
             <section class="behavior-on-product">
-                <section class="product-btn" onclick="detailAction(true)"><span>ADD</span></section>
-                <section class="product-btn" onclick="detailAction(false)"><span>BUY</span></section>
+                <section class="product-btn" onclick="detailAction(false)"><span>ADD</span></section>
+                <section class="product-btn" onclick="detailAction(true)"><span>BUY</span></section>
             </section>
         </section>
     </section>
     <section class="product-description">
         <section class="description-title"><span>Product Description</span></section>
-        <img src="${productObj.contentImg}">
-        <p>${productObj.contentInfo}</p>
+        <img src="${window.location.origin}${productinfo.product_content_img}">
+        <p>${productinfo.product_detail}</p>
     </section>`;
     addWidegt('product-detail-info', proInfo).addP();
 }
 function resetInfoStatus(val, array) {
+    console.log(array);
     array.forEach((item, index) => {
         var target = getElments(val + '-' + index);
         target.style.backgroundColor = unselectedBg;
@@ -85,13 +137,13 @@ function resetInfoStatus(val, array) {
 function changeInfoStatus(el, isSize, str) {
     var isSelected = false;
     if (isSize) {
-        isSelected = (str == productObj.selectedSize);
-        productObj.selectedSize = isSelected ? '' : str;
-        resetInfoStatus('detail-size', productObj.size);
+        isSelected = (str == myproduct.product_size);
+        myproduct.product_size = isSelected ? '' : str;
+        resetInfoStatus('detail-size', JSON.parse(productinfo.product_size));
     } else {
-        isSelected = (str == productObj.selectedColor);
-        productObj.selectedColor = isSelected ? '' : str;
-        resetInfoStatus('detail-color', productObj.color);
+        isSelected = (str == myproduct.product_color);
+        myproduct.product_color = isSelected ? '' : str;
+        resetInfoStatus('detail-color', JSON.parse(productinfo.product_color));
     }
     el.style.backgroundColor = isSelected ? unselectedBg : selectedBg;
     el.style.border = isSelected ? unselectedBorder : selectedBorder;
@@ -109,28 +161,48 @@ function changeCount(isAdd) {
         value -= 1;
         target.value = value;
     }
-    productObj.count = value;
+    myproduct.product_count = value;
 }
 function detailAction(isBuy) {
-    if (!productObj.selectedSize) {
+    let user = checkLoginStatus();
+    myproduct.buyer_id = user.id;
+    myproduct.buyer_name = user.nickname;
+    
+    if (!myproduct.product_size) {
         showToast('Please chose the size');
         return;
     }
 
-    if (!productObj.selectedColor) {
+    if (!myproduct.product_color) {
         showToast('Please chose the color');
         return;
     }
 
-    if (productObj.count < 0) {
+    if (myproduct.product_count < 0) {
         showToast('Please input count!');
         return;
     }
 
     // add to cart list
     if (isBuy) {
-        showToast('Purchase success!');
+        // todo
+        let orders = [];
+        myproduct['store_name'] = current_store.store_name;
+        orders.push(myproduct);
+        CreateOrders({orders}).then(data=>{
+            console.log(data);
+            showToast('Purchase success!');
+        }).catch(err=>{
+            console.log(err);
+            showToast(err);
+        })
     } else {
-        showToast('Add to cart success!');
+        // todo
+        AddToCart(myproduct).then(data => {
+            showToast(data);
+            createCartList();
+        }).catch(err => {
+            showToast(err);
+        })
     }
 }

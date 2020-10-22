@@ -9,6 +9,7 @@
     <link type="text/css" rel="styleSheet" href="../style/account.css" />
     <link type="text/css" rel="styleSheet" href="../style/search.css" />
     <script type="text/javascript" src="../common/common.js"></script>
+
 </head>
 
 <body>
@@ -41,21 +42,21 @@
                     <section class="profile-form">
                         <section class="form-item">
                             <span>Legal Name:</span>
-                            <input type="text" name="legalname" placeholder="Jilai Xie" disabled>
+                            <input type="text" name="legalname" placeholder="Jilai Xie" id="profile-name" disabled>
                         </section>
                         <section class="form-item">
-                            <span>Phone:</span> <input type="number" name="phone" placeholder="027-321-2675" onblur="checkUpdatePhone(this)" oninput="cancelErrorUpdatePhone(this)">
+                            <span>Phone:</span> <input type="number" name="phone" placeholder="027-321-2675" id="profile-phone" onblur="checkUpdatePhone(this)" oninput="cancelErrorUpdatePhone(this)">
                         </section>
                         <span id="error-update-phone" class="error-msg-user" style="margin-top: 5px;margin-left: 110px;">Invalid phone number!</span>
                         <section class="form-item">
-                            <span>Email:</span> <input type="email" name="email" placeholder="sherilyshieh@gmail.com" onblur="checkUpdateEmail(this)" oninput="cancelErrorUpdateEmail(this)">
+                            <span>Email:</span> <input type="email" name="email" id="profile-email" placeholder="sherilyshieh@gmail.com" onblur="checkUpdateEmail(this)" oninput="cancelErrorUpdateEmail(this)">
                         </section>
                         <span id="error-update-email" class="error-msg-user" style="margin-top: 5px;margin-left: 110px;">Invalid email!</span>
                         <section class="form-item">
-                            <span>Nick Name:</span> <input type="text" name="nickname" placeholder="Sherily Shieh">
+                            <span>Nick Name:</span> <input type="text" name="nickname" id="profile-nickname" placeholder="Sherily Shieh">
                         </section>
                         <section class="form-item">
-                            <span>Address:</span> <input type="text" name="address" placeholder="18 Bell Street, Tawa, Wellington">
+                            <span>Address:</span> <input type="text" name="address" id="profile-address" placeholder="18 Bell Street, Tawa, Wellington">
                         </section>
                         <input type="submit" value="Update" class="form-update" onclick="updateProfile()">
                     </section>
@@ -75,29 +76,29 @@
                                     <img src="../../static/down.png">
                                 </section>
                                 <section class="dropdown-content" id="account-price-sort">
-                                    <p onclick="changeDpTitle(this, 'account-price-sort', 'account-price-sort-text', 'Price: ')">Low to High</p>
-                                    <p onclick="changeDpTitle(this, 'account-price-sort', 'account-price-sort-text', 'Price: ')">High to Low</p>
+                                    <p onclick="changeDpTitle(this, 'account-price-sort', 'account-price-sort-text', 'Price: ', 1)">Low to High</p>
+                                    <p onclick="changeDpTitle(this, 'account-price-sort', 'account-price-sort-text', 'Price: ', 1)">High to Low</p>
                                 </section>
                             </section>
                         </section>
                         <section class="filter-time common-margin-search">
                             <section class="dropdown price">
                                 <section class="search-price" onclick="openAccountDp(true, 'account-time-sort')">
-                                    <span class="dropbtn" style="border: none;" id="account-time-sort-text">Time: Old to Latest</span>
+                                    <span class="dropbtn" style="border: none;" id="account-time-sort-text">Latest to Old</span>
                                     <img src="../../static/down.png">
                                 </section>
                                 <section class="dropdown-content" id="account-time-sort">
-                                    <p onclick="changeDpTitle(this, 'account-time-sort', 'account-time-sort-text', 'Time: ')">Old to Latest</p>
-                                    <p onclick="changeDpTitle(this, 'account-time-sort', 'account-time-sort-text', 'Time: ')">Latest to Old</p>
+                                    <p onclick="changeDpTitle(this, 'account-time-sort', 'account-time-sort-text', 'Time: ', 1)">Latest to Old</p>
+                                    <p onclick="changeDpTitle(this, 'account-time-sort', 'account-time-sort-text', 'Time: ', 1)">Old to Latest</p>
                                 </section>
                             </section>
                         </section>
                         <section class="search-pagers">
-                            <img src="../../static/right.png" onclick="previous()">
-                            <span>1/100</span>
-                            <img src="../../static/left.png" onclick="next()">
+                            <img src="../../static/right.png" onclick="previousProduct()">
+                            <span id="product-pager">1/100</span>
+                            <img src="../../static/left.png" onclick="nextProduct()">
                             <span>To</span>
-                            <input type="text" name="index" placeholder="1" onkeydown="goToPage(event, this)">
+                            <input type="text" name="index" placeholder="1" onkeydown="goToProductPage(event, this)">
                         </section>
                     </section>
                     <section class="my-product-list" id="my-product-list">
@@ -119,8 +120,8 @@
                             <img src="../../static/down2.png">
                         </section>
                         <section class="dropdown-content" id="order-type">
-                            <p onclick="changeOrderType(this, 'order-type', 'order-type-title', '', true)">Sold</p>
-                            <p onclick="changeOrderType(this, 'order-type', 'order-type-title', '', false)">Purchased</p>
+                            <p onclick="changeOrderType(this, 'order-type', 'order-type-title', '')">Sold</p>
+                            <p onclick="changeOrderType(this, 'order-type', 'order-type-title', '')">Purchased</p>
                         </section>
                     </section>
                 </section>
@@ -133,29 +134,29 @@
                                     <img src="../../static/down.png">
                                 </section>
                                 <section class="dropdown-content" id="order-price-sort">
-                                    <p onclick="changeDpTitle(this, 'order-price-sort', 'order-price-sort-text', 'Price: ')">Low to High</p>
-                                    <p onclick="changeDpTitle(this, 'order-price-sort', 'order-price-sort-text', 'Price: ')">High to Low</p>
+                                    <p onclick="changeDpTitle(this, 'order-price-sort', 'order-price-sort-text', 'Price: ', 2)">Low to High</p>
+                                    <p onclick="changeDpTitle(this, 'order-price-sort', 'order-price-sort-text', 'Price: ', 2)">High to Low</p>
                                 </section>
                             </section>
                         </section>
                         <section class="filter-time common-margin-search">
                             <section class="dropdown price">
                                 <section class="search-price" onclick="openAccountDp(true, 'order-time-sort')">
-                                    <span class="dropbtn" style="border: none;" id="order-time-sort-text">Time: Old to Latest</span>
+                                    <span class="dropbtn" style="border: none;" id="order-time-sort-text">Time: Latest to Old</span>
                                     <img src="../../static/down.png">
                                 </section>
                                 <section class="dropdown-content" id="order-time-sort">
-                                    <p onclick="changeDpTitle(this, 'order-time-sort', 'order-time-sort-text', 'Time: ')">Old to Latest</p>
-                                    <p onclick="changeDpTitle(this, 'order-time-sort', 'order-time-sort-text', 'Time: ')">Latest to Old</p>
+                                    <p onclick="changeDpTitle(this, 'order-time-sort', 'order-time-sort-text', 'Time: ', 2)">Old to Latest</p>
+                                    <p onclick="changeDpTitle(this, 'order-time-sort', 'order-time-sort-text', 'Time: ', 2)">Latest to Old</p>
                                 </section>
                             </section>
                         </section>
                         <section class="search-pagers">
-                            <img src="../../static/right.png" onclick="previous()">
-                            <span>1/100</span>
-                            <img src="../../static/left.png" onclick="next()">
+                            <img src="../../static/right.png" onclick="previousOrder()">
+                            <span id="order-pager">1/100</span>
+                            <img src="../../static/left.png" onclick="nextOrder()">
                             <span>To</span>
-                            <input type="text" name="index" placeholder="1" onkeydown="goToPage(event, this)">
+                            <input type="text" name="index" placeholder="1" onkeydown="goToOrderPage(event, this)">
                         </section>
                     </section>
                     <section class="my-product-list" id="my-order-list">
@@ -181,29 +182,29 @@
                                     <img src="../../static/down.png">
                                 </section>
                                 <section class="dropdown-content" id="collect-price-sort">
-                                    <p onclick="changeDpTitle(this, 'collect-price-sort', 'collect-price-sort-text', 'Price: ')">Low to High</p>
-                                    <p onclick="changeDpTitle(this, 'collect-price-sort', 'collect-price-sort-text', 'Price: ')">High to Low</p>
+                                    <p onclick="changeDpTitle(this, 'collect-price-sort', 'collect-price-sort-text', 'Price: ', 3)">Low to High</p>
+                                    <p onclick="changeDpTitle(this, 'collect-price-sort', 'collect-price-sort-text', 'Price: ', 3)">High to Low</p>
                                 </section>
                             </section>
                         </section>
                         <section class="filter-time common-margin-search">
                             <section class="dropdown price">
                                 <section class="search-price" onclick="openAccountDp(true, 'collect-time-sort')">
-                                    <span class="dropbtn" style="border: none;" id="collect-time-sort-text">Time: Old to Latest</span>
+                                    <span class="dropbtn" style="border: none;" id="collect-time-sort-text">Time: Latest to Old</span>
                                     <img src="../../static/down.png">
                                 </section>
                                 <section class="dropdown-content" id="collect-time-sort">
-                                    <p onclick="changeDpTitle(this, 'collect-time-sort', 'collect-time-sort-text', 'Time: ')">Old to Latest</p>
-                                    <p onclick="changeDpTitle(this, 'collect-time-sort', 'collect-time-sort-text', 'Time: ')">Latest to Old</p>
+                                    <p onclick="changeDpTitle(this, 'collect-time-sort', 'collect-time-sort-text', 'Time: ', 3)">Old to Latest</p>
+                                    <p onclick="changeDpTitle(this, 'collect-time-sort', 'collect-time-sort-text', 'Time: ', 3)">Latest to Old</p>
                                 </section>
                             </section>
                         </section>
                         <section class="search-pagers">
-                            <img src="../../static/right.png" onclick="previous()">
-                            <span>1/100</span>
-                            <img src="../../static/left.png" onclick="next()">
+                            <img src="../../static/right.png" onclick="previousCollect()">
+                            <span id="collect-pager">1/100</span>
+                            <img src="../../static/left.png" onclick="nextCollect()">
                             <span>To</span>
-                            <input type="text" name="index" placeholder="1" onkeydown="goToPage(event, this)">
+                            <input type="text" name="index" placeholder="1" onkeydown="goToCollectPage(event, this)">
                         </section>
                     </section>
                     <section class="my-product-list" id="my-collect-list">
@@ -227,40 +228,81 @@
                 <section class="dialog-form">
                     <section class="dialog-form-item">
                         <label>Title</label>
-                        <input type="text" name="title">
+                        <input id="product-title" type="text" class="title input-match-parent" placeholder="please input product title.">
+                    </section>
+                    <section class="dialog-form-item">
+                        <label>Department</label>
+                        <input id="product-department" type="text" list="department_list" class="price input-match-parent" placeholder="please select product department.">
+                        <datalist id="department_list">
+                            <option>Women</option>
+                            <option>Men</option>
+                            <option>Girl</option>
+                            <option>Boy</option>
+                        </datalist>
+                    </section>
+                    <section class="dialog-form-item">
+                        <label>Type</label>
+                        <input id="product-type" type="text" list="type" class="price input-match-parent" placeholder="please select product department.">
+                        <datalist id="type">
+                            <option>Boots</option>
+                            <option>Slippers</option>
+                            <option>Sneakers</option>
+                            <option>Outdoor</option>
+                            <option>Runners</option>
+                            <option>Sandals</option>
+                        </datalist>
                     </section>
                     <section class="dialog-form-item">
                         <label>Price</label>
-                        <input type="text" name="price">
+                        <input type="text" id="product-price" class="price input-match-parent" placeholder="please input product price.">
                     </section>
                     <section class="dialog-form-item">
                         <label>Main picture</label>
-                        <input type="file" name="main_icon" accept="image/*" id="upload">
+                        <input type="file" id="product-icon" accept="image/*" class="input-match-parent" onchange="showIcon('#product-icon', 'icon-canvas', 'icon-canvas-div')">
+                    </section class="dialog-form-item">
+                    <section class="dialog-form-item" id="icon-canvas-div" style="display: none;">
+                        <label> </label>
+                        <canvas id="icon-canvas" width="100" height="100"></canvas>
                     </section class="dialog-form-item">
                     <section class="dialog-form-item">
-                        <label>Count</label>
-                        <input type="text" name="count">
-                    </section>
-                    <section class="dialog-form-item">
                         <label>Size</label>
-                        <input type="text" name="size">
+                        <input type="text" id="product-size" class="size input-match-parent" placeholder="Please enter the size and use '/' split multiple sizes ">
                     </section>
                     <section class="dialog-form-item">
                         <label>Color</label>
-                        <input type="text" name="color">
+                        <input type="text" id="product-color" class="price input-match-parent" placeholder="Please enter the color and use '/' split multiple colors ">
                     </section>
                     <section class="dialog-form-item">
-                        <label>Imgines</label>
-                        <input type="file" name="imgines" multiple>
+                        <label>Content imgine</label>
+                        <input type="file" id="product-content-img" accept="image/*" onchange="showIcon('#product-content-img', 'img-canvas', 'img-canvas-div')">
                     </section>
+                    <section class="dialog-form-item" id="img-canvas-div" style="display: none;">
+                        <label> </label>
+                        <canvas id="img-canvas" width="100" height="100"></canvas>
+                    </section class="dialog-form-item">
                     <section class="dialog-form-item">
                         <label>Description</label>
-                        <textarea name="description" cols="40" rows="8"></textarea>
+                        <textarea id="product-description" cols="40" rows="8" class="price input-match-parent" placeholder="Please input product's detail"></textarea>
                     </section>
                     <section class="dialog-form-item">
                         <button type="submit" class="product-dialog-cancle" onclick="cancel()">Cancel</button>
                         <button type="submit" class="product-dialog-confirm" onclick="submit()">Submit</button>
                     </section>
+                </section>
+            </section>
+        </section>
+    </section>
+    <section class="dialog-mask" id="dialog-mask-delete">
+        <section class="dialog-position">
+            <section class="dialog" id="delete-dialog-product" style="padding: 5px 20px;">
+                <img src="../../static/delete1.png" class="close-dialog" onclick="closeDeleteDialog()">
+                <p class="dialog-title">Delete Product</p>
+                <section class="dialog-form-item">
+                    <p>Do you want to delete current product?</p>
+                </section>
+                <section class="dialog-form-item">
+                    <button class="product-dialog-cancle" style="margin-left: 0px;" onclick="cancelDelete()">Cancel</button>
+                    <button class="product-dialog-confirm" onclick="Confirm()">Confirm</button>
                 </section>
             </section>
         </section>

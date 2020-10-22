@@ -1,6 +1,6 @@
-// import '../../data/mockdata.js';
 document.write("<script type='text/javascript' src='../../data/mockdata.js'></script>");
 document.write("<script src='../../data/jquery-3.5.1.min.js'></script>")
+document.write("<script type='text/javascript' src='../../data/api/index.js'></script>");
 
 var unselectedIcon = '../../static/unselected.png';
 var selectedIcon = '../../static/selected.png';
@@ -15,6 +15,85 @@ var defaultBorder = 'solid 1px #C1C2C7';
 var isShowRLoginPwd = false;
 var isShowRegisterPwd = false;
 var isShowRegisterConfirm = false;
+
+var curwishlist = [];
+var totalwish = 0;
+var selectedwish = [];
+/**
+ * convert the str which contain '/' into array
+ * @param {*} str 
+ */
+function formatStr(str) {
+    if (str) {
+        let arr = str.split('\'');
+        let name = '';
+        arr.forEach((item, index) => {
+            if (index === 0) {
+                name = item;
+            } else {
+                name = `${name}''${item}`;
+            }
+
+        });
+        return name;
+    }
+    return '';
+
+}
+/**
+ * delete the key whoes value is empty in the object
+ * @param {*} obj 
+ */
+function formatObject(obj) {
+    if (obj) {
+        for (var key in obj) {
+            if (obj[key] === '' || obj[key] === undefined || obj[key] === null) {
+                delete obj[key]
+            }
+        }
+        return obj;
+    }
+    return null;
+
+}
+
+function checkLoginStatus() {
+    let user = initUser();
+    if (user) {
+        return user;
+    }
+    showToast("Please Login");
+    window.open(`${window.location.origin}/view/home/Home.html`, '_self');
+    return null;
+
+}
+
+function GetCurrentRequest(needLogin) {
+    if (needLogin) {
+        checkLoginStatus();
+    }
+    const url = location.search;
+    let theRequest = new Object();
+    if (url.indexOf("?") != -1) {
+        let str = url.substr(1);
+        strs = str.split("&");
+        for (let i = 0; i < strs.length; i++) {
+            theRequest[strs[i].split("=")[0]] = unescape(strs[i].split("=")[1]);
+        }
+    }
+    console.log(theRequest);
+
+    return theRequest;
+}
+
+function initViewWithQuery() {
+    if (window.location.pathname == '/view/search/search.html') {
+        let query = GetCurrentRequest(false);
+        getElments('header-filter').innerText = query.dep ? query.dep : 'All';
+        getElments('common-search-bar').value = query.keyword ? query.keyword : '';
+    }
+
+}
 
 // common header
 var header = ['    <div class="header col-24">',
@@ -31,10 +110,10 @@ var header = ['    <div class="header col-24">',
     '                    </section>',
     '                    <section class="dropdown-content" id="filter-dropdown">',
     '                        <p id="header-dd-0" onclick="selectedFilter(0)">All</p>',
-    '                        <p id="header-dd-1" onclick="selectedFilter(1)">Women\'s Fashion</p>',
-    '                        <p id="header-dd-2" onclick="selectedFilter(2)">Men\'s Fashion</p>',
-    '                        <p id="header-dd-3" onclick="selectedFilter(3)">Girls\' Fashion</p>',
-    '                        <p id="header-dd-4" onclick="selectedFilter(4)">Boys\' Fashion</p>',
+    '                        <p id="header-dd-1" onclick="selectedFilter(1)">Women</p>',
+    '                        <p id="header-dd-2" onclick="selectedFilter(2)">Men</p>',
+    '                        <p id="header-dd-3" onclick="selectedFilter(3)">Girls</p>',
+    '                        <p id="header-dd-4" onclick="selectedFilter(4)">Boys</p>',
     '                    </section>',
     '                </section>',
     '                <!-- todo: click trigge the dropdown -->',
@@ -71,7 +150,7 @@ var header = ['    <div class="header col-24">',
     '            </section>',
     '        </section>',
     '    </div>',
-    '    <section class="cart-red-num-div" onclick="openCart()">',
+    '    <section class="cart-red-num-div" id="cart-red-num-sec" onclick="openCart()">',
     '        <span id="cart-red-num">99+</span>',
     '    </section>',
     '    <section class="dialog-mask" id="dialog-mask">',
@@ -80,7 +159,7 @@ var header = ['    <div class="header col-24">',
     '            <section class="my-cart">',
     '                <section class="my-cart-header">',
     '                    <span>My Cart</span>',
-    '                    <span id="cart-count">Total: 10</span>',
+    '                    <span id="cart-count">Total: 0</span>',
     '                </section>',
     '                <section id="cart-list">',
     '                </section>',
@@ -97,7 +176,7 @@ var header = ['    <div class="header col-24">',
     '                    <section class="my-cart-buy">',
     '                        <section>',
     '                            <span>Total:</span>',
-    '                            <span id="total-money">NZ$300</span>',
+    '                            <span id="total-money">NZ$0.00</span>',
     '                        </section>',
     '                        <button type="button" id="cart-buy" onclick="purchase()">',
     '                        BUY',
@@ -224,6 +303,40 @@ var footer = ['    <div class="bottom">',
     '    </div>'
 ].join("");
 
+function setCookie(key, value, expiredays, domain, path) {
+    var exdate = new Date();
+    exdate.setDate(exdate.getDate() + expiredays);
+    var str = expiredays ? `;expires=${exdate.toGMTString()}` : '';
+    str += domain ? `;domain=${domain}` : '';
+    str += path ? `;path=${path}` : '';
+    document.cookie = `${key}=${escape(value)}${str}`;
+}
+
+function getCookie(key) {
+    var reg = new RegExp(`(^| )${key}=([^;]*)(;|$)`);
+    var arr = document.cookie.match(reg);
+    if (arr) {
+        return unescape(arr[2]);
+    }
+    return '';
+}
+
+function clearCookie(name, domain, path) {
+    setCookie(name, '', 0, domain, path);
+}
+
+function getSessionStorage(key) {
+    let value = window.sessionStorage.getItem(key);
+    if (value) {
+        try {
+            return JSON.parse(value);
+        } catch (e) {
+            return null;
+        }
+    }
+    return null;
+}
+
 function showToast(val) {
     var toast = `<div class="common-toast">
                     <span>${val}</span>
@@ -242,7 +355,8 @@ function getElments(val) {
 function addWidegt(elem, sub) {
     var _self = getElments(elem);
     this.addP = function() {
-        _self.innerHTML = sub;
+        if (_self)
+            _self.innerHTML = sub;
     }
     return this;
 }
@@ -259,21 +373,47 @@ function addCommonFooter() {
 
 // Cart-drawer
 function openCart() {
-    getElments('dialog-mask').style.display = 'block';
+    if (initUser()) {
+        getElments('dialog-mask').style.display = 'block';
+    } else {
+        showToast('Please Login first!');
+    }
+
 }
 
 function closeCart() {
     getElments('dialog-mask').style.display = 'none';
 }
 
-function refreshTotal(val) {
+function refreshTotal() {
+    let total_count = 0;
+    let money = 0;
+    if (selectedwish.length) {
+        selectedwish.forEach(element => {
+            total_count += Number(element.product_count);
+            money += Number(element.product_count) * Number(element.product_price);
+        });
+        getElments('cart-count').innerText = 'Total: ' + total_count;
+        getElments('total-money').innerText = `NZ$${money}`;
+    } else {
+        getElments('cart-count').innerText = 'Total: 0';
+        getElments('total-money').innerText = 'NZ$0.00';
+    }
+
+}
+
+function refreshRedNum(val) {
+    if (val > 0) {
+        getElments('cart-red-num-sec').style.display = 'flex';
+    } else {
+        getElments('cart-red-num-sec').style.display = 'none';
+    }
     var num = val + '';
     if (val > 99) {
         num = '99+';
     }
     getElments('cart-red-num').innerText = num;
-    getElments('cart-count').innerText = 'Total: ' + val;
-    getElments('total-money').innerText = 'NZ$0.00';
+
 }
 
 function addCartItemWidget() {
@@ -281,54 +421,61 @@ function addCartItemWidget() {
     t.addP('cart-list');
 }
 
-// loveArr.forEach(e => {
-//     loveStr += `<div class="row">
-//                     <div class="title">${e.title}</div>
-//                     <div class="text">
-//                         ${e.textArr.map((element, index) => {
-//                             return `<span>${index + 1}.${element}</span>`
-//                         }).join('')}
-//                     </div>
-//                 </div>`
-// })
-function crearCartList() {
-    var cartList = getCartList();
-    var mycart = '';
-    if (cartList.length) {
-        cartList.forEach((item, index) => {
-                    mycart += `<div class="cart-item">
-            <section class="cart-shop">
-                <img src="../../static/unselected.png" id="cart-shop-selection-${item.unique}" class="cart-selection-btn" onclick="changeSelected(${index})">
-                <span id="cart-shop-name" onclick="openStore(${item.sid})">${item.store}</span>
-            </section>
-            <section id="cart-product-list">
-                ${item.products.map((pro, pindex) => {
-                    return `<section class="cart-product-item">
-                    <img src="../../static/unselected.png" id="cart-product-selection-${pro.id}" class="cart-selection-btn" onclick="changeItemSelected(${index}, ${pindex})">
-                    <img src="${pro.icon}" class="cart-product-icon" onclick="openProduct(${pro.pid})">
-                    <section class="cart-product-info">
-                        <span class="cart-product-name">${pro.title}</span>
-                        <span>Size: ${pro.size}</span>
-                        <span>Color: ${pro.color}</span>
-                        <section class="cart-product-price">
-                            <span>NZ$${pro.price}</span>
-                            <section class="cart-product-action">
-                                <img src="../../static/mins1.png" onclick="deleteCount(${index}, ${pindex})">
-                                <input type="number" value="${pro.count}" id="cart-product-number-${item.unique}-${pro.id}" min="1">
-                                <img src="../../static/add1.png"  onclick="addCount(${index}, ${pindex})">
+
+function createCartList() {
+    // var cartList = getCartList();
+    selectedwish = [];
+    let user = initUser();
+    if (user) {
+        GetWishList({ user_id: user.id }).then(data => {
+                    var mycart = '';
+                    totalwish = data.count;
+                    refreshRedNum(data.count);
+                    if (data.list && data.list.length) {
+                        curwishlist = data.list;
+                        data.list.forEach((item, index) => {
+                                    item['isSelected'] = false;
+                                    mycart += `<div class="cart-item">
+                <section class="cart-shop">
+                    <img src="../../static/unselected.png" id="cart-shop-selection-${item.store_id}" class="cart-selection-btn" onclick="changeSelected(${index})">
+                    <span id="cart-shop-name" onclick="openStore(${item.store_id})">${item.store_name}</span>
+                </section>
+                <section id="cart-product-list">
+                    ${item.products.map((pro, pindex) => {
+                        pro['isSelected'] = false;
+                        return `<section class="cart-product-item" id="cart-product-item-${pro.id}">
+                        <img src="../../static/unselected.png" id="cart-product-selection-${pro.id}" class="cart-selection-btn" onclick="changeItemSelected(${index}, ${pindex})">
+                        <img src="${window.location.origin}${pro.product_icon}" class="cart-product-icon" onclick="openProduct(${item.store_id},${pro.product_id})">
+                        <section class="cart-product-info">
+                            <span class="cart-product-name">${pro.product_name}</span>
+                            <span>Size: ${pro.product_size}</span>
+                            <span>Color: ${pro.product_color}</span>
+                            <section class="cart-product-price">
+                                <span>NZ$${pro.product_price}</span>
+                                <section class="cart-product-action">
+                                    <img src="../../static/mins1.png" onclick="deleteCount(${index}, ${pindex})">
+                                    <input type="number" value="${pro.product_count}" id="cart-product-number-${pro.id}" min="1">
+                                    <img src="../../static/add1.png"  onclick="addCount(${index}, ${pindex})">
+                                </section>
                             </section>
                         </section>
-                    </section>
-                </section>`
-                }).join('')}
-            </section>
-        </div>`;
+                    </section>`
+                    }).join('')}
+                </section>
+            </div>`;
+            });
+        }
+        canvasMycart(mycart);
+        }).catch(err=>{
+            showToast(err);
         });
+    } else {
+        refreshRedNum(0);
     }
-    return mycart;
+    
+
 }
-function canvasMycart() {
-    var wid = crearCartList();
+function canvasMycart(wid) {
     var list = getElments('cart-list');
     var empty = getElments('cart-list-empty');
     if (wid) {
@@ -341,26 +488,25 @@ function canvasMycart() {
     }
 }
 
-function openProduct(val) {
+function openProduct(val1, val2) {
     // alert(val);
-    window.open(`../../view/product/product.html?pid=${val}`, '_self');
+    window.open(`${window.location.origin}/view/product/product.html?sid=${val1}&pid=${val2}`, '_self');
 }
 
 function openStore(val) {
     // alert(val);
-    window.open(`../../view/mystore/mystore.html?sid=${val}`, '_self');
+    window.open(`${window.location.origin}/view/mystore/mystore.html?sid=${val}`, '_self');
 }
+
 
 function changeSelected(val) {
     // change radio status, add or remove into/form selectedlist
-    // alert(val);
-    var mycart = getCartList();
-    var shop = mycart[val];
+    var shop = curwishlist[val];
     shop.isSelected = !shop.isSelected;
     if (shop.isSelected) {
-        getElments(`cart-shop-selection-${shop.unique}`).src = selectedIcon;
+        getElments(`cart-shop-selection-${shop.store_id}`).src = selectedIcon;
     } else {
-        getElments(`cart-shop-selection-${shop.unique}`).src = unselectedIcon;
+        getElments(`cart-shop-selection-${shop.store_id}`).src = unselectedIcon;
     }
     shop.products.map((item) => {
         if (shop.isSelected) {
@@ -371,14 +517,61 @@ function changeSelected(val) {
             getElments(`cart-product-selection-${item.id}`).src = unselectedIcon; 
         }
     });
-    changeSelectedList(shop, val);
-    // console.log(shop);
+    console.log('curwishlist', curwishlist);
+    refreshselstedList(shop);
+    
+}
+function findposition(e) {
+    for (var i = 0; i < selectedwish.length; i++) {
+        var item = selectedwish[i];
+        if (e.id == item.id) {
+            return i;
+        }
+    }
+    return -1;
+}
+function refreshselstedList(shop) {
+    if (selectedwish && selectedwish.length) {
+        shop.products.forEach((e) => {
+            var fIndex = findposition(e);
+            if (fIndex >= 0 && !e.isSelected) {
+                selectedwish.splice(fIndex, 1);
+            } else if (fIndex < 0 && e.isSelected) {
+                selectedwish.push(e);
+            }
+        });
+    } else {
+        shop.products.forEach((e) => {
+            if (e.isSelected) {
+                selectedwish.push(e);
+            }
+        });
+    }
+    refreshTotal();
+}
+
+function refreshSelectedCount(product, isDelete) {
+    if (selectedwish && selectedwish.length) {
+        if (!isDelete) {
+            selectedwish.forEach(e => {
+                if (e.id === product.id) {
+                    e.product_count = product.product_count;
+                }
+            });
+        } else {
+            let index = findposition(product);
+            if (index >= 0) {
+                selectedwish.splice(index, 1);
+            }
+        }
+    }
+    refreshTotal();
+    
 }
 
 function changeItemSelected(val1, val2) {
     // change radio status, add or remove into/form selectedlist
-    // alert(val1+ ":" +val2);
-    var shop = mycart[val1];
+    var shop = curwishlist[val1];
     shop.products[val2].isSelected = !shop.products[val2].isSelected;
     if (shop.products[val2].isSelected) {
         getElments(`cart-product-selection-${shop.products[val2].id}`).src = selectedIcon;
@@ -392,72 +585,116 @@ function changeItemSelected(val1, val2) {
     shop.isSelected = isSelected;
     
     if (isSelected) {
-        getElments(`cart-shop-selection-${shop.unique}`).src = selectedIcon;
+        getElments(`cart-shop-selection-${shop.store_id}`).src = selectedIcon;
     } else {
-        getElments(`cart-shop-selection-${shop.unique}`).src = unselectedIcon;
+        getElments(`cart-shop-selection-${shop.store_id}`).src = unselectedIcon;
     }
-    changeSelectedList(shop, val1);
+    console.log('curwishlist', curwishlist);
+    refreshselstedList(shop);
 }
 
 function addCount(val1, val2) {
     // change item count and total price
-    // alert(val1+ ":" +val2);
-    var list = getCartList();
-    var shop = list[val1];
+    var shop = curwishlist[val1];
     var product = shop.products[val2];
-    product.count += 1;
-    getElments(`cart-product-number-${shop.unique}-${product.id}`).value = product.count;
+    let count = Number(product.product_count) 
+    product.product_count = count + 1;
+    getElments(`cart-product-number-${product.id}`).value = product.product_count;
     shop.products.splice(val2, 1, product);
-    updateStatus(shop, val1);
+    refreshSelectedCount(product, false);
+    modifywish(product.id, product.product_count);
 }
 
 function deleteCount(val1, val2) {
     // change item count and total price, if count = 0, remove item and refresh item
-    // alert(val1+ ":" +val2);
-    var list = getCartList();
-    var shop = list[val1];
+    var shop = curwishlist[val1];
     var product = shop.products[val2];
-    if (product.count > 1) {
-        product.count -= 1;
-        getElments(`cart-product-number-${shop.unique}-${product.id}`).value = product.count;
+    let count = Number(product.product_count) 
+    if ( count > 1) {
+        product.product_count = count - 1;
+        getElments(`cart-product-number-${product.id}`).value = product.product_count;
         shop.products.splice(val2, 1, product);
-        updateStatus(shop, val1);
+        refreshSelectedCount(product, false);
+        modifywish(product.id, product.product_count);
     } else {
         shop.products.splice(val2, 1);
-        if (shop.products.length) {
-            updateStatus(shop, val1);
-        } else {
-            updateStatus(null, val1);
-        }
-        // removeChild('cart-list');
-        canvasMycart();   
+        refreshSelectedCount(product, true);
+        let ids = [];
+        ids.push(product.id);
+        Deletewishs({ids}).then(data => {
+            console.log(data);
+            createCartList();
+        }).catch(err=>{
+            showToast(err);
+        });
+        
+ 
     }
 }
 
+function modifywish(id, count) {
+    ModifyWish({
+        wish_id: id,
+        count
+    }).then(data=>{
+        console.log(data);
+    }).catch(err=>{
+        showToast(err);
+    });
+}
+
+function deletewishs(ids) {
+    // now won't remeber the selected status.
+    DeleteWishs({
+        ids
+    }).then(data=>{
+        console.log(data);
+        createCartList();
+    }).catch (err=>{
+        console.log(err);
+        showToast(err);
+    });
+}
 
 
 function purchase() {
-    if (getCartList().length) {
+    if (selectedwish && selectedwish.length) {
         // notify sucess
-        closeCart();
-        showToast('Purchase success!');
-        if (deleteSelectedList()) {
-            canvasMycart();
-        }
+        CreateOrders({orders: selectedwish}).then(data=>{
+            console.log(data);
+            closeCart();
+            showToast('Purchase success!');
+            deleteSelected();
+            refreshTotal();
+        }).catch(err=>{
+            console.log(err);
+            showToast(err);
+        })
+
     } else {
         // todo s
-        showToast('Please select some products~!');
+        showToast('No items are currently selected!');
     }
 }
 
 function deleteSelected() {
     // remove item and refresh item
-    // alert('delete');
-    if (deleteSelectedList()) {
-        showToast('delete product');
-        canvasMycart();
+    if (!selectedwish.length) {
+        showToast("No items are currently selected!");
+        return;
     }
-
+    let ids = [];
+    selectedwish.forEach(e => {
+        ids.push(e.id);
+    });
+    DeleteWishs({ids}).then(data=>{
+        showToast(data);
+        createCartList();
+        selectedwish = [];
+        refreshTotal();
+    }).catch(err=>{
+        showToast(err);
+    });
 
 }
 
@@ -480,38 +717,54 @@ function openEmail() {
 
 // Common header actions
 function openAboutus() {
-    window.open('../../view/aboutus/aboutus.html', '_self');
+    window.open(`${window.location.origin}/view/aboutus/aboutus.html`, '_self');
     closeDropdown();
 }
 
 function backHome() {
-    window.open('../../view/home/Home.html', '_self');
+    window.open(`${window.location.origin}/view/home/Home.html`, '_self');
     closeDropdown();
 }
 
 function quickSearch(dep, type) {
-    window.open(`../../view/search/search.html?dep=${dep}&&type=${type}`, '_self');
+    window.open(`${window.location.origin}/view/search/search.html?dep=${dep}&type=${type}&page=1&tod=DESC&pod=ASC`, '_self');
 }
 function search() {
-    var key = getElments('common-search-bar').value;
+    let key = getElments('common-search-bar').value;
+    let dep = getElments('header-filter').innerText;
+    let depquery = dep === 'All' ? '' : `dep=${dep}&`
+    if (key) {
     // alert(key);
-    window.open(`../../view/search/search.html?keyword=${key}`, '_self');
+        
+        window.open(`${window.location.origin}/view/search/search.html?${depquery}keyword=${key}&page=1&tod=DESC&pod=ASC`, '_self');
+        // window.open(`${window.location.origin}/view/search/search.html?keyword=${key}`, '_self');
+    } else {
+        showToast("please input keyword!")
+    }
     closeDropdown();
 
 }
 
 function openMyaccount(val) {
     // todo
-    window.open(`../../view/myaccount/myaccount.html?nav=${val}`, '_self');
+    window.open(`${window.location.origin}/view/myaccount/myaccount.html?nav=${val}`, '_self');
     closeDropdown();
 
 }
 
 function logout() {
     // todo
-    logoutAction();
+    Logout().then(data => {
+        console.log(data);
+        clearCookie('LOGIN_USER', '', '/');
+        showToast("Logout successfully!");
+        reset();
+        window.open(`${window.location.origin}/view/home/Home.html`, '_self');
+    }).catch(err => {
+        showToast(err);
+    });
     closeDropdown();
-    reset();
+
 }
 
 
@@ -542,6 +795,7 @@ function selectedFilter(val) {
 
 }
 
+
 function initFilterDorp() {
     for (var i = 0; i < 5; i++) {
         if (getFilterCurrentType() == i) {
@@ -553,7 +807,7 @@ function initFilterDorp() {
 }
 // myaccount dropdown depend on the isLogin status show different dialog
 function openDropdown() {
-    if (isLoggedIn()) {
+    if (isLogin) {
         getElments('logined-dropdown').style.display = 'block';
     } else {
         getElments('unlogin-dropdown').style.display= 'block';
@@ -642,25 +896,26 @@ function closeLoginDialog() {
     restLoginDialog();
 }
 function loginU() {
-    if (CheckUserName() && (isShowRLoginPwd ? checkPassword(getElments('password-login-hide')) : checkPassword(getElments('password-login-hide')))) {
+    if (CheckUserName() && (isShowRLoginPwd ? checkPassword(getElments('password-login-show')) : checkPassword(getElments('password-login-hide')))) {
         var loginUser = {
-            accountName: '',
+            username: '',
             password: ''
         };
-        loginUser.accountName = getElments('account-name-login').value;
+        loginUser.username = getElments('account-name-login').value;
         loginUser.password = getElments('password-login-hide').value;
-        var rep = loginWithUser(loginUser);
-        if (rep.success){//login success
+        Login(loginUser).then((data) => {
             closeLoginDialog();
-        } else if (rep.errorCode == 1) {// incorrect pwd or account
+            setCookie('LOGIN_USER', JSON.stringify(data), 0, '', '/');
+            console.log(data);
+            reset();
+        }).catch((err) => {
             showErrorForLogin('Incorrect user account or password!');
-        } else if (rep.errorCode == 2) {// no user
-            showErrorForLogin('No user, please register!');
-        }
+            console.log(err);
+        });
     }
-    reset();
 
 }
+
 function login() {
     getElments('dialog-mask-login').style.display = 'block';
     getElments('login-dialog').style.display = 'block';
@@ -872,7 +1127,7 @@ function checkPhone(e){
 
 function cancleErrorPhone(e) {
     e.style.border = defaultBorder;
-    getElments('error-nickname').style.display = "none";
+    getElments('error-phone').style.display = "none";
 }
 
 function checkNickname(e){
@@ -970,32 +1225,50 @@ function RegisterU() {
     && checkNickname(getElments('register-nickname')) && 
     (isShowRegisterPwd ? checkPasswordRegister(getElments('password-register-show')) : checkPasswordRegister(getElments('password-register-hide')))
     && (isShowRegisterConfirm ? checkConfirmInfo(getElments('confirm-show')) : checkConfirmInfo(getElments('confirm-hide')))) {
-        var rep = registerWithUser({
+        var request = {
             legalName: getElments('legal-name').value.trim(),
             address:getElments('register-address').value.trim(),
             email: getElments('register-emial').value.trim(),
             phone: getElments('register-phone').value.trim(),
             nickName: getElments('register-nickname').value.trim(),
             password: isShowRegisterPwd ? getElments('password-register-show').value.trim() : getElments('password-register-hide').value.trim()
-        });
-        if (rep) {
+        };
+        Register(request).then((data) => {
             closeRegisterDialog();
-            showToast('Register successfully!');
-        } else {
+            showToast(data + 'Please login!');
+            login();
+            
+        }).catch(err => {
             closeRegisterDialog();
             showToast('Registration failed!');
-        }
-        reset();
+        });
     }
 }
+
+function initUser() {
+    let jsonuser = getCookie('LOGIN_USER');
+    if (jsonuser) {
+        let user = JSON.parse(jsonuser);
+        isLogin = true;
+        return user;
+    }
+    isLogin = false;
+    return null;
+   
+}
+var isLogin = false;
 function reset() {
-    if (getUser() && isLoggedIn()) {
-        getElments('account-name-dp').innerText = getUser().nickName;
+    let user = initUser();
+    if (user && isLogin) {
+        getElments('account-name-dp').innerText = user.nickname;
     } else {
         getElments('account-name-dp').innerText = 'My Account';
     }
 }
+// =========================== header ===================================
 
+
+// =========================== feedback center ===================================
 function createFeedbackCenter() {
     feedbackcenter = `<div class="feedback-center" onclick="openorcloseFeedback(true)">
         <img src="../../static/feed_back.png" class="feedback-center-icon">
@@ -1013,7 +1286,7 @@ function createFeedbackCenter() {
                     <span id="error-feedback-name" class="error-msg-user" style="margin-left: 100px;">Please enter your name!</span>
                     <section class="dialog-form-item">
                         <label>Email</label>
-                        <input type="text" name="color" style="width: 300px;" id="feedback-email" placeholder="Please enter your emial!" onblur="checkFeedback(this, 'error-feedbackemail', true)" oninput="cancelFeedbackError(this, 'error-feedbackemail')">
+                        <input type="text" name="color" style="width: 300px;" id="feedback-email" placeholder="Please enter your emial!" onblur="checkFeedback(this, 'error-feedback-email', true)" oninput="cancelFeedbackError(this, 'error-feedback-email')">
                     </section>
                     <span id="error-feedback-email" class="error-msg-user" style="margin-left: 100px;">Please enter your email!</span>
                     <section class="dialog-form-item">
@@ -1032,16 +1305,37 @@ function createFeedbackCenter() {
 
 }
 
+function restFeedbackForm() {
+    getElments('feedback-name').value = '';
+    getElments('feedback-email').value = '';
+    getElments('feedback-content').value = '';
+}
+
 function openorcloseFeedback(isOpen) {
     getElments('dialog-mask-feedback').style.display = isOpen ? 'block' : 'none';
     getElments('feedback-dialog').style.display = isOpen ? 'block' : 'none';
+    restFeedbackForm();
 }
 
 function sendFeedback() {
+    let user = initUser();
     if (checkFeedback(getElments('feedback-name'), 'error-feedback-name', false) 
     && checkFeedback(getElments('feedback-email'), 'error-feedback-email', true) 
     && checkFeedback(getElments('feedback-content'), 'error-feedback-content', false)) {
-        showToast('Send success!')
+        CreateFeedback({
+            user_id: user ? user.id : 0,
+            cur_webpage: window.location.pathname,
+            name: getElments('feedback-name').value,
+            email: getElments('feedback-email').value,
+            content: formatStr(getElments('feedback-content').value)
+        }).then(data => {
+            openorcloseFeedback(false);
+            showToast(data);
+        }).catch(err => {
+            openorcloseFeedback(false);
+            showToast(err);
+        });
+        
     }
 
 }
@@ -1053,11 +1347,12 @@ function checkFeedback(el, error, isemail) {
         if (isemail) {
             showErrorInfo(error, 'Please enter your email!');
         }
-        showErrorInfo(error, null);
+        showErrorInfo(error, 'Please enter your infomation!');
         flag = false;
-    } else if (!isEmail(el.value.trim())){
+    } else if (isemail && !isEmail(el.value.trim())){
         showErrorInfo(error, 'Invalid emial!');
         flag = false;
+        
     }
     return flag;
 } 
@@ -1066,28 +1361,40 @@ function cancelFeedbackError(el, error) {
     el.style.border = defaultBorder;
     getElments(error).style.display = 'none';
 }
-var banners;
-function createBannerView() {
-    banners = getBanners();
-    var bannerview = `
-    <section class="banner-contanier">
-        ${
-            banners.map((item, index) => {
-               return `<img src="${item.bannerimg}" id="product-banner-${index}" style="display: ${index == 0 ? 'block' : 'none'}">` 
-            }).join('')
-        }
-    </section>
-    <section class="banner-indicator">
-        ${
-            banners.map((item, index) => {
-                return `<img src="${index == 0 ? selectedIndicator : unselectedIdicator}" id="product-indicator-${index}" onclick="showBanner(${index})">` 
-             }).join('')
-        }
-    </section>
-    `;
-    addWidegt('banner', bannerview).addP();
-}
+// =========================== feedback center ===================================
 
+// =========================== banners ===================================
+function formatLink(link) {
+    return `'${window.location.origin}${link}'`;
+}
+function createBannerView() {
+    GetBanners().then(data => {
+        var bannerview = `
+        <section class="banner-contanier">
+            ${
+                data.map((item, index) => {
+                    let link = formatLink(item.link);
+                   return `<img onclick="openBanner(${link})" src="${window.location.origin}${item.img}" id="product-banner-${index}" style="display: ${index == 0 ? 'block' : 'none'}">` 
+                }).join('')
+            }
+        </section>
+        <section class="banner-indicator">
+            ${
+                data.map((item, index) => {
+                    return `<img src="${index == 0 ? selectedIndicator : unselectedIdicator}" id="product-indicator-${index}" onclick="showBanner(${index})">` 
+                 }).join('')
+            }
+        </section>
+        `;
+        addWidegt('banner', bannerview).addP();
+    }).catch(err => {
+        showToast(err);
+    });
+
+}
+function openBanner(link) {
+    window.open(link, '_self');
+}
 function showBanner(index) {
     for (var i = 0; i < 6; i++) {
         getElments(`product-banner-${i}`).style.display = (i == index) ? 'block' : 'none';
@@ -1098,13 +1405,18 @@ function showBanner(index) {
     }
 }
 
+function initBanner() {
+    if (window.location.origin === '/view/home/Home.html') {
+        createBannerView();
+    }
+}
+// =========================== banners ===================================
 window.onload = function() {
     addCommonHeader();
     addCommonFooter();
     reset();
     initFilterDorp();
-    canvasMycart();
-    refreshTotal(getCartTotal());
+    createCartList();
     createFeedbackCenter();
-    createBannerView();
+    initViewWithQuery();
 };

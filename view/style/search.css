@@ -1,11 +1,21 @@
 .search-filter {
     background: white;
-    padding: 15px;
+    padding: 5px;
     display: flex;
     align-items: center;
     flex-flow: wrap;
     font-size: 14px;
     box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+    color: #666666;
+}
+
+.confirm-btn {
+    background: #1C748B;
+    border: none;
+    border-radius: 4px;
+    padding: 10px;
+    color: white;
+    font-weight: 700;
 }
 
 .filter-price {
@@ -20,6 +30,10 @@
 .filter-time {
     display: flex;
     align-items: center;
+}
+
+.input-match-parent {
+    flex: 1;
 }
 
 .price {

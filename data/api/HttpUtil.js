@@ -1,89 +1,52 @@
 document.write("<script type='text/javascript' src='../../data/api/mypromise.js'></script>")
+document.write("<script src='../../data/jquery-3.5.1.min.js'></script>")
+    // var data_model = {
+    //     data: {
 
-const baseUrl = "http://localhost:8088/";
-const ajax = (method, path, body, headers) => {
+//     },
+//     status: {
+//         code: 200, // 404, 503, 500
+//         msg: ""
+//     }
+// }
+const baseUrl = "http://localhost:8088/"; // if you wanna run on your compute, please change this to your database address 
+const ajax = (method, path, body, header, isFile) => {
     return new MyPromise((resolve, reject) => {
-        var request;
-        if (window.XMLHttpRequest) {
-            //  IE7+, Firefox, Chrome, Opera, Safari 
-            request = new XMLHttpRequest();
-            request.timeout = 2000;
-
-        } else {
-            // IE6, IE5 
-            request = new ActiveXObject("Microsoft.XMLHTTP");
-        }
-        request.open(method || 'get', path);
-        if (headers) {
-            for (const key in headers) {
-                let value = headers[key];
-                request.setRequestHeader(key, value);
-            }
-        } else {
-            request.setRequestHeader('Content-Type', 'application/json');
-        }
-        request.send(body);
-        request.onreadystatechange = () => {
-            console.log(request);
-
-            if (request.readyState === 4) {
-                if (request.status === 200) {
-                    resp = JSON.parse(request.response);
-                    console.log(resp);
-                    resolve(resp);
+        data = (method === "POST" && !isFile) ? JSON.stringify(body) : body;
+        $.ajax({
+            type: method,
+            contentType: isFile ? false : header,
+            processData: !isFile,
+            url: path,
+            data: data,
+            success: function(result) {
+                console.log(result);
+                if (result.status.code === 200) {
+                    resolve(result.data);
                 } else {
-                    reject(resp);
+                    reject(result.status.msg);
                 }
 
+            },
+            error: function(e) {
+                console.log(e.status);
+                console.log(e.responseText);
+                reject(e.responseText);
             }
-        }
+        });
 
     });
 }
 
-function isArray(value) {
-    return Object.prototype.toString.call(value) === '[object Array]';
-}
-
-function createQuery(key, arr) {
-    let query = `${key}=${arr[0]}`;
-    arr.forEach((item, index) => {
-        if (index > 0) {
-            query += `&${key}=${item}`;
-        }
-    });
-    return query;
-}
 
 function http(params) {
     params.body = params.body || {};
     let url = baseUrl + params.url + params.path;
-    let querys = '?';
     let method = params.method;
-    let data = {};
-    if (method === 'get') {
-        for (let key in params.body) {
-            if (params.body[key] !== undefined) {
-                if (isArray(params.body[key])) {
-                    let query = createQuery(key, params.body[key]);
-                    if (count === 0) {
-                        querys += query;
-                    } else {
-                        querys += `&${query}`;
-                    }
-                    count += 1;
-                } else {
-                    data[key] = params.body[key];
-                }
-            }
-        }
-        url += querys;
+    let data = params.body;
+    let header = params.header || "application/json;charset=UTF-8";
+    let isFile = params.isFile;
 
-    } else {
-        data = params.body;
-    }
-    count = 0;
-
-    return ajax(method, url, data, null);
+    return ajax(method, url, data, header, isFile);
 
 }
